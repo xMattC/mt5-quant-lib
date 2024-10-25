@@ -1,0 +1,171 @@
+#property library
+#include <Trade/Trade.mqh>
+#include <MyLibs/TradingWindow.mqh>
+
+class MyFunctions : public CObject{
+
+   protected:
+      CTrade trade;
+      TradingWindow tw;      
+      datetime previousTime;
+      datetime bar_open_time;
+
+   public:
+      bool     is_new_daily_bar(string symbol, datetime start_time);   
+      double   period_high(string symbol, int periods, int shift);
+      double   period_low(string symbol, int periods, int shift);
+      void     draw_line(double value, string name,color clr);
+      bool     check_indicator_handles(int &indicator_handles[]);
+      double   adjusted_point(string symbol);
+      double   get_bid_ask_price(string symbol, int price_side);
+      bool     is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame);   
+      bool     trade_window(string t1, string t2, string time_zone, bool plot_range_inp=true);
+
+};
+
+bool MyFunctions::trade_window(string t1, string t2, string time_zone="Broker", bool plot_range_inp=true){
+   bool in_window = tw.define_window(t1, t2, time_zone, plot_range_inp);
+   return in_window;
+}
+
+//if(!mf.is_new_daily_bar(symbol, PERIOD_M1)){return;}
+bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame){
+   bar_open_time = iTime(symbol,time_frame,0);
+   if(previousTime!=bar_open_time){
+      previousTime=bar_open_time;
+      return true;
+   }
+   return false;
+}
+
+// e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
+bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
+    // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
+    bar_open_time = iTime(symbol,PERIOD_D1,0);
+    if(previousTime!=bar_open_time && TimeCurrent() > start_time){
+        previousTime=bar_open_time;
+        return true;
+    }
+    return false;
+}
+
+
+double MyFunctions::period_high(string symbol, int periods, int shift){
+   
+   double highs[]; 
+   ArraySetAsSeries(highs,true);
+   CopyHigh(symbol,PERIOD_CURRENT,1,periods+1,highs);
+
+   double high = 0;
+   high=highs[shift];
+   for(int i=shift; i<shift+periods; i++){
+      if(high<highs[i]){
+         high=highs[i];
+      }
+   }
+   return(high);
+}
+
+double MyFunctions::period_low(string symbol, int periods, int shift){
+   
+   double lows[]; 
+   ArraySetAsSeries(lows,true);
+   CopyLow(symbol,PERIOD_CURRENT,1,periods+1,lows);
+
+   double low = 0;
+   low=lows[shift];
+   for(int i=shift; i<shift+periods; i++){
+      if(low>lows[i]){
+         low=lows[i];
+      }
+   }
+   return(low);
+}
+
+void MyFunctions::draw_line(double value, string name,color clr){
+   // EG:
+   //    ArrayResize(bar,1000);
+   //    ArraySetAsSeries(bar, true);
+   //    CopyRates(symbol,PERIOD_CURRENT,1,1000,bar);
+   //    double close = bar[0].close;  
+   //    draw_line(close,"CLOSE",clrBlue);
+
+   if(ObjectFind(0,name)<0){
+      ResetLastError();
+
+      if(!ObjectCreate(0,name,OBJ_HLINE,0,0,value)){
+         Print(__FUNCTION__,": failed to create a horizontal line! Error code = ",GetLastError());
+         return;
+      }
+
+      ObjectSetInteger(0,name,OBJPROP_COLOR,clr);
+      ObjectSetInteger(0,name,OBJPROP_STYLE,STYLE_SOLID);
+      ObjectSetInteger(0,name,OBJPROP_WIDTH,1);
+   }
+
+   ResetLastError();
+
+   if(!ObjectMove(0,name,0,0,value)){
+      Print(__FUNCTION__,": failed to move the horizontal line! Error code = ",GetLastError());
+      return;
+   }
+   
+   ChartRedraw();
+}
+
+bool MyFunctions::check_indicator_handles(int &indicator_handles[]){
+   // TODO check if working before implementaion:
+   // e.g. call via:
+      // int indicator_handles[] = {handle1, handle2, handle..};
+      // check_indicator_handles(indicator_handles);
+
+   for(int i =0; i < ArraySize(indicator_handles); i++){
+
+      if(indicator_handles[i] == INVALID_HANDLE){
+         Alert("Failed to create handle"); return false;
+      };
+   }
+
+   return true;
+}
+
+double MyFunctions::adjusted_point(string symbol){
+
+   int symbol_digits  = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+   int digits_adjust=1;
+   if(symbol_digits==3 || symbol_digits==5){
+      digits_adjust=10;
+   }
+
+   double symbol_point_val = SymbolInfoDouble(symbol,SYMBOL_POINT);
+   double m_adjusted_point;
+   m_adjusted_point = symbol_point_val * digits_adjust;
+
+   return m_adjusted_point;
+
+}
+// price side - 1 for the ask price and 2 for the bid price
+double MyFunctions::get_bid_ask_price(string symbol, int price_side){
+
+   int symbol_digits  = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+   double symbol_point  = SymbolInfoDouble(symbol, SYMBOL_POINT);
+   
+   double ask = SymbolInfoDouble(symbol, SYMBOL_ASK);
+   ask = NormalizeDouble(ask, symbol_digits);
+   
+   double bid = SymbolInfoDouble(symbol, SYMBOL_BID);
+   bid = NormalizeDouble(bid, symbol_digits);
+   
+   double price = 0;
+   
+   if(price_side==1){
+      price =  ask;
+   }
+   
+   else if(price_side==2){
+      price =  bid;
+   }
+
+   return price;
+
+}
