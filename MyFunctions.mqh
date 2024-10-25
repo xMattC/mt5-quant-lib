@@ -1,6 +1,7 @@
 #property library
 #include <Trade/Trade.mqh>
 #include <MyLibs/TradingWindow.mqh>
+#include <MyLibs/MyEnums.mqh>
 
 class MyFunctions : public CObject{
 
@@ -20,7 +21,7 @@ class MyFunctions : public CObject{
       double   get_bid_ask_price(string symbol, int price_side);
       bool     is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame);   
       bool     trade_window(string t1, string t2, string time_zone, bool plot_range_inp=true);
-
+      bool     in_test_period(MODE_SPLIT_DATA data_period);
 };
 
 bool MyFunctions::trade_window(string t1, string t2, string time_zone="Broker", bool plot_range_inp=true){
@@ -35,6 +36,48 @@ bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame){
       previousTime=bar_open_time;
       return true;
    }
+   return false;
+}
+
+//if(!mf.in_test_period(data_split_method){return;}
+bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
+
+   string result[];
+   string string_tc = TimeToString(TimeCurrent());
+   ushort u_sep = StringGetCharacter(".",0); 
+   int split_string = StringSplit(string_tc, u_sep, result); 
+   
+   bool even_year = int(result[0]) % 2;
+   // bool even_month = int(result[1]) % 2; // need to remove the leading 0 for this to work.    
+
+   if(data_split_method==NO_SPLIT){
+      return true;
+   }
+
+   if(data_split_method==ODD_YEARS){
+      if (!even_year){
+         return true;
+      }
+   }
+
+   if(data_split_method==EVEN_YEARS){
+      if (even_year){
+         return true;
+      }
+   }
+
+   // if(data_split_method==ODD_MONTHS){
+   //    if (!even_month){
+   //       return true;
+   //    }
+   // }
+
+   // if(data_split_method==EVEN_MONTHS){
+   //    if (even_month){
+   //       return true;
+   //    }
+   // }
+
    return false;
 }
 
