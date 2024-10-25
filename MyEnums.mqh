@@ -36,3 +36,11 @@ enum  MULTI_SYM_MODE{
     MULTI_SYM_FX_B5,    // FX Benchmark 5
     MULTI_SYM_FX_28     // FX 28 Majors
 };
+
+enum MODE_SPLIT_DATA{
+    NO_SPLIT,   
+    ODD_YEARS,  
+    EVEN_YEARS,
+    // ODD_MONTHS,
+    // EVEN_MONTHS 
+};
