@@ -46,37 +46,59 @@ bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
    string string_tc = TimeToString(TimeCurrent());
    ushort u_sep = StringGetCharacter(".",0); 
    int split_string = StringSplit(string_tc, u_sep, result); 
+   bool odd_year = int(result[0]) % 2;
+   bool odd_month = int(result[1]) % 2;  
+
+   // get week of the year. rough estimate can be late the first week of jan:
+   MqlDateTime dt;
+   TimeToStruct(TimeCurrent(),dt); 
+   int iDay  = (dt.day_of_week + 6 ) % 7 + 1;        // convert day to standard index (1=Mon,...,7=Sun)
+   int iWeek = (dt.day_of_year - iDay + 10 ) / 7;    // calculate standard week number
    
-   bool even_year = int(result[0]) % 2;
-   // bool even_month = int(result[1]) % 2; // need to remove the leading 0 for this to work.    
+   bool odd_week = iWeek % 2;     
+
 
    if(data_split_method==NO_SPLIT){
       return true;
    }
 
    if(data_split_method==ODD_YEARS){
-      if (!even_year){
+      if (odd_year){              
          return true;
       }
    }
 
    if(data_split_method==EVEN_YEARS){
-      if (even_year){
+      if (!odd_year){      
          return true;
       }
    }
 
-   // if(data_split_method==ODD_MONTHS){
-   //    if (!even_month){
-   //       return true;
-   //    }
-   // }
+   if(data_split_method==ODD_MONTHS){
+      if (odd_month){   
+         return true;
+      }
+   }
 
-   // if(data_split_method==EVEN_MONTHS){
-   //    if (even_month){
-   //       return true;
-   //    }
-   // }
+   if(data_split_method==EVEN_MONTHS){
+
+      if (!odd_month){
+         return true;
+      }
+   }
+
+   if(data_split_method==ODD_WEEKS){
+      if (odd_week){     
+         return true;
+      }
+   }
+
+   if(data_split_method==EVEN_WEEKS){
+
+      if (!odd_week){
+         return true;
+      }
+   }
 
    return false;
 }
@@ -91,7 +113,6 @@ bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
     }
     return false;
 }
-
 
 double MyFunctions::period_high(string symbol, int periods, int shift){
    

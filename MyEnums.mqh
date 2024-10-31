@@ -37,10 +37,13 @@ enum  MULTI_SYM_MODE{
     MULTI_SYM_FX_28     // FX 28 Majors
 };
 
+// used to generate in and out of sample data sets
 enum MODE_SPLIT_DATA{
     NO_SPLIT,   
     ODD_YEARS,  
     EVEN_YEARS,
-    // ODD_MONTHS,
-    // EVEN_MONTHS 
+    ODD_MONTHS,
+    EVEN_MONTHS,
+    ODD_WEEKS,
+    EVEN_WEEKS     
 };
