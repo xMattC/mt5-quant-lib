@@ -39,6 +39,17 @@ bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame){
    return false;
 }
 
+// e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
+bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
+    // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
+    bar_open_time = iTime(symbol,PERIOD_D1,0);
+    if(previousTime!=bar_open_time && TimeCurrent() > start_time){
+        previousTime=bar_open_time;
+        return true;
+    }
+    return false;
+}
+
 //if(!mf.in_test_period(data_split_method){return;}
 bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
 
@@ -103,16 +114,6 @@ bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
    return false;
 }
 
-// e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
-bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
-    // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
-    bar_open_time = iTime(symbol,PERIOD_D1,0);
-    if(previousTime!=bar_open_time && TimeCurrent() > start_time){
-        previousTime=bar_open_time;
-        return true;
-    }
-    return false;
-}
 
 double MyFunctions::period_high(string symbol, int periods, int shift){
    

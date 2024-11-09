@@ -22,5 +22,6 @@ input int inp_force_opt = 1;
 input group "-----------------------------------------"
 //----
 string bm5_symbols[] = {"EURUSD", "AUDNZD", "EURGBP", "AUDCAD", "CHFJPY"};
+
 string fx28_symbols[] = {"EURUSD","AUDNZD","AUDUSD","AUDJPY","EURCHF","EURGBP","EURJPY","GBPCHF","GBPJPY","GBPUSD","NZDUSD","USDCAD","USDCHF","USDJPY","CADJPY","EURAUD","CHFJPY","EURCAD","AUDCAD","AUDCHF","CADCHF","EURNZD","GBPAUD","GBPCAD","GBPNZD","NZDCAD","NZDCHF","NZDJPY",};
 
