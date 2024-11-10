@@ -12,14 +12,14 @@ class MyFunctions : public CObject{
       datetime bar_open_time;
 
    public:
-      bool     is_new_daily_bar(string symbol, datetime start_time);   
+      // bool     is_new_daily_bar(string symbol, datetime start_time);   
       double   period_high(string symbol, int periods, int shift);
       double   period_low(string symbol, int periods, int shift);
       void     draw_line(double value, string name,color clr);
       bool     check_indicator_handles(int &indicator_handles[]);
       double   adjusted_point(string symbol);
       double   get_bid_ask_price(string symbol, int price_side);
-      bool     is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame);   
+      bool     is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, string daily_start_time="00:10");   
       bool     trade_window(string t1, string t2, string time_zone, bool plot_range_inp=true);
       bool     in_test_period(MODE_SPLIT_DATA data_period);
 };
@@ -29,25 +29,27 @@ bool MyFunctions::trade_window(string t1, string t2, string time_zone="Broker", 
    return in_window;
 }
 
-//if(!mf.is_new_daily_bar(symbol, PERIOD_M1)){return;}
-bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame){
-   bar_open_time = iTime(symbol,time_frame,0);
-   if(previousTime!=bar_open_time){
-      previousTime=bar_open_time;
-      return true;
+//if(!mf.is_new_bar(symbol, PERIOD_D1, "00:06")){return;}
+bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, string daily_start_time="00:10"){
+   
+   bar_open_time = iTime(symbol, time_frame, 0);
+   if(previousTime!=bar_open_time){     
+      
+      if(PeriodSeconds(time_frame)==PeriodSeconds(PERIOD_D1)){   
+         if(TimeCurrent() > StringToTime(daily_start_time)){
+            Print("new bar");
+            previousTime=bar_open_time;
+            return true;            
+         }
+      }
+      
+      else{
+         previousTime=bar_open_time;         
+         return true;                    
+      }
+
    }
    return false;
-}
-
-// e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
-bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
-    // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
-    bar_open_time = iTime(symbol,PERIOD_D1,0);
-    if(previousTime!=bar_open_time && TimeCurrent() > start_time){
-        previousTime=bar_open_time;
-        return true;
-    }
-    return false;
 }
 
 //if(!mf.in_test_period(data_split_method){return;}
@@ -234,3 +236,18 @@ double MyFunctions::get_bid_ask_price(string symbol, int price_side){
    return price;
 
 }
+
+
+
+
+
+// // e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
+// bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
+//     // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
+//     bar_open_time = iTime(symbol,PERIOD_D1,0);
+//     if(previousTime!=bar_open_time && TimeCurrent() > start_time){
+//         previousTime=bar_open_time;
+//         return true;
+//     }
+//     return false;
+// }
