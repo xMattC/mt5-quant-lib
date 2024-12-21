@@ -30,13 +30,11 @@ enum  TIME_ZONES{
     Mosc,    // Moscow
     Tok,     // Tokyo - no DST
 };
-
 enum  MULTI_SYM_MODE{
     MULTI_SYM_CHART,    // Chart Symbol only
     MULTI_SYM_FX_B5,    // FX Benchmark 5
     MULTI_SYM_FX_28     // FX 28 Majors
 };
-
 // used to generate in and out of sample data sets
 enum MODE_SPLIT_DATA{
     NO_SPLIT,   
