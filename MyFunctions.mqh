@@ -138,7 +138,7 @@ bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
    return false;
 }
 
-void MyFunctions::draw_line(double value, string name,color clr){
+void MyFunctions::draw_line(double value, string name,color clr=clrBlack){
    // EG:
    //    ArrayResize(bar,1000);
    //    ArraySetAsSeries(bar, true);

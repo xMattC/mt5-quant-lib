@@ -22,6 +22,12 @@ enum  TP_MODE{
     NO_TAKE_PROFIT,      // No Take-Profit 
 };
 
+enum  TSL_MODE{
+    TSL_ATR_MULTIPLE,     // ATR Multiple    
+    TSL_FIXED_PIPS,       // Fixed Pips        
+    TSL_FIXED_PERCENT,    // Fixed Percent
+};
+
 enum  TIME_ZONES{
     NY,      // New York
     Lon,     // London
