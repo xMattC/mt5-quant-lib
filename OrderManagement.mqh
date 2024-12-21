@@ -1,10 +1,12 @@
 #property library
 #include <Trade/Trade.mqh>
 #include <MyLibs/TimeZones.mqh>
+#include <MyLibs/MyEnums.mqh>
 #include <MyLibs/CalculatePositionData.mqh>
 #include <Trade/PositionInfo.mqh>
 #include <Trade/OrderInfo.mqh>
- 
+#include <MyLibs/Myfunctions.mqh>
+
 class OrderManagment : public CObject{
    
    protected:
@@ -14,6 +16,7 @@ class OrderManagment : public CObject{
       CPositionInfo  m_position;
       COrderInfo     m_order; 
 
+ 
       double   stop_loss; 
       double   take_profit;  
       ulong    posTicket;
@@ -29,6 +32,9 @@ class OrderManagment : public CObject{
    public:
       bool     open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
       bool     open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
+      bool     open_nnfx_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
+      bool     open_nnfx_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
+      
       bool     open_buy_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
       bool     open_sell_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number);
       bool     close_buy_orders(string symbol, bool buy_out, int close_bars, ENUM_TIMEFRAMES close_bar_period, long magic_number);
@@ -42,6 +48,7 @@ class OrderManagment : public CObject{
       double   tp_specified_value_switch(string _tp_mode, double _inp_tp_var, double value); 
       int      count_open_positions(string symbol,int order_side, long magic_number);
       void     break_even_stop(string symbol, ulong magic_number, int be_trigger_points, int be_puffer);  
+      void     nnfx_trailing_stop(string symbol, double sl_var, double tp_var, double atr_value, ulong magic_number);        
    };
 
 bool OrderManagment::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var, long magic_number){
@@ -91,6 +98,54 @@ bool OrderManagment::open_sell_orders(string symbol, bool condition, ENUM_TIMEFR
    return true; 
 }
 
+bool OrderManagment::open_nnfx_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var, long magic_number){
+
+   if(condition ==  true){
+      current_price = SymbolInfoDouble(symbol, SYMBOL_ASK); // ask for buy side
+
+      total_open_buy_orders = count_open_positions(symbol, 1, magic_number);
+      if(total_open_buy_orders == 0){
+
+         stop_loss = cpd.calculate_stoploss(symbol, current_price, 1, _sl_mode, sl_var, atr_period);
+         take_profit = cpd.calculate_take_profit(symbol, current_price, stop_loss, 1, _tp_mode, tp_var, atr_period);
+   
+         double sl_distance = current_price-stop_loss;         
+         double lots = cpd.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var/2);
+            
+         trade.SetExpertMagicNumber(magic_number);
+         string comment = "Magic Number: " + IntegerToString(magic_number);
+         trade.PositionOpen(symbol,ORDER_TYPE_BUY,lots,current_price,stop_loss,take_profit,comment);
+         trade.PositionOpen(symbol,ORDER_TYPE_BUY,lots,current_price,stop_loss,0,comment);
+      }
+   }
+   return true; 
+}
+
+
+bool OrderManagment::open_nnfx_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number){
+
+   if(condition ==  true){
+
+      // if(!SymbolInfoTick(symbol,currentTick)){Print("FAILED TO GET TICK:", symbol);return false;}
+      current_price = SymbolInfoDouble(symbol, SYMBOL_BID);  // bid for sell side
+
+      total_open_sell_orders = count_open_positions(symbol, 2, magic_number);
+      if(total_open_sell_orders == 0){
+
+         stop_loss = cpd.calculate_stoploss(symbol, current_price, 2, _sl_mode, sl_var, atr_period);
+         take_profit = cpd.calculate_take_profit(symbol, current_price, stop_loss, 2, _tp_mode, tp_var, atr_period);
+
+         double sl_distance = stop_loss-current_price;
+         double lots = cpd.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var);
+
+         trade.SetExpertMagicNumber(magic_number);
+         string comment = "Magic Number: " + IntegerToString(magic_number);         
+         trade.PositionOpen(symbol,ORDER_TYPE_SELL,lots,current_price,stop_loss,take_profit,comment);
+         trade.PositionOpen(symbol,ORDER_TYPE_SELL,lots,current_price,stop_loss,0,comment);         
+      }
+   }
+   return true; 
+}
 // some usfull comment here
 bool OrderManagment::open_buy_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,string _tp_mode, double tp_var, string _lot_mode, double lot_var,long magic_number){
 
@@ -368,19 +423,20 @@ int OrderManagment::count_pending_orders(string symbol, ENUM_ORDER_TYPE order_ty
 
 void OrderManagment::break_even_stop(string symbol, ulong magic_number, int be_trigger_points, int be_puffer){
 
-   if(PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == magic_number){
+   for(int i = PositionsTotal()-1; i >=0; i--){
+      if(PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == magic_number){
 
-      int symbol_digits  = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
-      double symbol_point  = SymbolInfoDouble(symbol, SYMBOL_POINT);
+         int symbol_digits  = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+         double symbol_point  = SymbolInfoDouble(symbol, SYMBOL_POINT);
 
-      double ask = SymbolInfoDouble(symbol, SYMBOL_ASK);
-      ask = NormalizeDouble(ask, symbol_digits);
-      
-      double bid = SymbolInfoDouble(symbol, SYMBOL_BID);
-      bid = NormalizeDouble(bid, symbol_digits);
+         double ask = SymbolInfoDouble(symbol, SYMBOL_ASK);
+         ask = NormalizeDouble(ask, symbol_digits);
+         
+         double bid = SymbolInfoDouble(symbol, SYMBOL_BID);
+         bid = NormalizeDouble(bid, symbol_digits);
 
-      if(be_trigger_points !=0){
-         for(int i = PositionsTotal()-1; i >=0; i--){
+         if(be_trigger_points !=0){
+
             
             ulong ticket = PositionGetTicket(i);
             if(PositionSelectByTicket(ticket)){
@@ -422,6 +478,68 @@ void OrderManagment::break_even_stop(string symbol, ulong magic_number, int be_t
             }
          }
       }
+   }
+}
+
+
+void OrderManagment::nnfx_trailing_stop(string symbol, double sl_var, double tp_var, double atr_value, ulong magic_number){
+
+   MyFunctions mf3;
+
+   for(int i = PositionsTotal()-1; i >=0; i--){
+
+      ulong ticket = PositionGetTicket(i);
+      if(PositionSelectByTicket(ticket)){
+
+         if(PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == magic_number){
+
+            int symbol_digits  = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+            double symbol_point  = SymbolInfoDouble(symbol, SYMBOL_POINT);
+
+            double ask = SymbolInfoDouble(symbol, SYMBOL_ASK);
+            ask = NormalizeDouble(ask, symbol_digits);
+            
+            double bid = SymbolInfoDouble(symbol, SYMBOL_BID);
+            bid = NormalizeDouble(bid, symbol_digits);
+
+            double position_open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+            double position_sl = PositionGetDouble(POSITION_SL);
+            double position_tp = PositionGetDouble(POSITION_TP); 
+            ENUM_POSITION_TYPE position_type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+            if(position_type == POSITION_TYPE_BUY){
+
+               if(bid > position_open_price + (atr_value * tp_var)){
+
+                  double sl = bid - (atr_value * sl_var);
+                  sl = NormalizeDouble(sl, symbol_digits);
+                  if(sl > (position_sl + (atr_value * 0.5))){
+
+                     if(trade.PositionModify(ticket, sl, position_tp)){
+
+                     }
+                  }
+               }
+            }
+            
+
+            else if(position_type == POSITION_TYPE_SELL){
+            
+               if(ask < position_open_price - (atr_value * tp_var)){
+
+                  double sl = ask + (atr_value * sl_var);
+                  sl = NormalizeDouble(sl, symbol_digits);
+                  if(sl < (position_sl + (atr_value * 0.5))){
+
+                     if(trade.PositionModify(ticket, sl, position_tp)){
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+
    }
 }
 
