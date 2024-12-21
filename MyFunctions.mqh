@@ -12,9 +12,6 @@ class MyFunctions : public CObject{
       datetime bar_open_time;
 
    public:
-      // bool     is_new_daily_bar(string symbol, datetime start_time);   
-      double   period_high(string symbol, int periods, int shift);
-      double   period_low(string symbol, int periods, int shift);
       void     draw_line(double value, string name,color clr);
       bool     check_indicator_handles(int &indicator_handles[]);
       double   adjusted_point(string symbol);
@@ -22,7 +19,33 @@ class MyFunctions : public CObject{
       bool     is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, string daily_start_time="00:10");   
       bool     trade_window(string t1, string t2, string time_zone, bool plot_range_inp=true);
       bool     in_test_period(MODE_SPLIT_DATA data_period);
+      void     get_white_list(MULTI_SYM_MODE mode, string& DataArray[]);
 };
+
+void MyFunctions::get_white_list(MULTI_SYM_MODE mode, string& DataArray[]){
+
+    if(mode==MULTI_SYM_CHART){
+        string a[] = {_Symbol};        
+        ArrayResize(DataArray, ArraySize(a));
+        for(int i = 0; i < ArraySize(DataArray); i++){    
+            DataArray[i]=a[i];
+        }
+    }    
+    if(mode==MULTI_SYM_FX_B5){
+        string a[] = {"EURUSD", "AUDNZD", "EURGBP", "AUDCAD", "CHFJPY"};        
+        ArrayResize(DataArray, ArraySize(a));
+        for(int i = 0; i < ArraySize(DataArray); i++){    
+            DataArray[i]=a[i];
+        }
+    }
+    if(mode==MULTI_SYM_FX_28){
+        string a[] = {"EURUSD","AUDNZD","AUDUSD","AUDJPY","EURCHF","EURGBP","EURJPY","GBPCHF","GBPJPY","GBPUSD","NZDUSD","USDCAD","USDCHF","USDJPY","CADJPY","EURAUD","CHFJPY","EURCAD","AUDCAD","AUDCHF","CADCHF","EURNZD","GBPAUD","GBPCAD","GBPNZD","NZDCAD","NZDCHF","NZDJPY",};        
+        ArrayResize(DataArray, ArraySize(a));
+        for(int i = 0; i < ArraySize(DataArray); i++){    
+            DataArray[i]=a[i];
+        }
+    }    
+}
 
 bool MyFunctions::trade_window(string t1, string t2, string time_zone="Broker", bool plot_range_inp=true){
    bool in_window = tw.define_window(t1, t2, time_zone, plot_range_inp);
@@ -37,7 +60,6 @@ bool MyFunctions::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, string d
       
       if(PeriodSeconds(time_frame)==PeriodSeconds(PERIOD_D1)){   
          if(TimeCurrent() > StringToTime(daily_start_time)){
-            Print("new bar");
             previousTime=bar_open_time;
             return true;            
          }
@@ -116,39 +138,6 @@ bool MyFunctions::in_test_period(MODE_SPLIT_DATA data_split_method){
    return false;
 }
 
-
-double MyFunctions::period_high(string symbol, int periods, int shift){
-   
-   double highs[]; 
-   ArraySetAsSeries(highs,true);
-   CopyHigh(symbol,PERIOD_CURRENT,1,periods+1,highs);
-
-   double high = 0;
-   high=highs[shift];
-   for(int i=shift; i<shift+periods; i++){
-      if(high<highs[i]){
-         high=highs[i];
-      }
-   }
-   return(high);
-}
-
-double MyFunctions::period_low(string symbol, int periods, int shift){
-   
-   double lows[]; 
-   ArraySetAsSeries(lows,true);
-   CopyLow(symbol,PERIOD_CURRENT,1,periods+1,lows);
-
-   double low = 0;
-   low=lows[shift];
-   for(int i=shift; i<shift+periods; i++){
-      if(low>lows[i]){
-         low=lows[i];
-      }
-   }
-   return(low);
-}
-
 void MyFunctions::draw_line(double value, string name,color clr){
    // EG:
    //    ArrayResize(bar,1000);
@@ -178,22 +167,6 @@ void MyFunctions::draw_line(double value, string name,color clr){
    }
    
    ChartRedraw();
-}
-
-bool MyFunctions::check_indicator_handles(int &indicator_handles[]){
-   // TODO check if working before implementaion:
-   // e.g. call via:
-      // int indicator_handles[] = {handle1, handle2, handle..};
-      // check_indicator_handles(indicator_handles);
-
-   for(int i =0; i < ArraySize(indicator_handles); i++){
-
-      if(indicator_handles[i] == INVALID_HANDLE){
-         Alert("Failed to create handle"); return false;
-      };
-   }
-
-   return true;
 }
 
 double MyFunctions::adjusted_point(string symbol){
@@ -236,18 +209,3 @@ double MyFunctions::get_bid_ask_price(string symbol, int price_side){
    return price;
 
 }
-
-
-
-
-
-// // e.g. if(!mf.is_new_daily_bar(symbol, StringToTime("00:06"))){return;}
-// bool MyFunctions::is_new_daily_bar(string symbol, datetime start_time){
-//     // https://www.youtube.com/watch?v=9BdnTcGrlUM (m-25:00)
-//     bar_open_time = iTime(symbol,PERIOD_D1,0);
-//     if(previousTime!=bar_open_time && TimeCurrent() > start_time){
-//         previousTime=bar_open_time;
-//         return true;
-//     }
-//     return false;
-// }

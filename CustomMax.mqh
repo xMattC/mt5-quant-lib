@@ -36,7 +36,7 @@ double CustomMax::calculate_custom_criteria(CUSTOM_MAX_TYPE cm_type){
         custom_criteria = win_loss_ratio();
     }
     if(cm_type==CM_WIN_PERCENT){
-        custom_criteria = win_percent();
+        custom_criteria = win_percent_min_trades(0);
     }    
     if(cm_type==CM_WIN_PERCENT_200T){
         custom_criteria = win_percent_min_trades(200);
@@ -73,22 +73,18 @@ double CustomMax::win_loss_ratio(){
     double losses = TesterStatistics(STAT_LOSS_TRADES); 
     return wins/losses;
 }
- 
-double CustomMax::win_percent(){
-    double wins = TesterStatistics(STAT_PROFIT_TRADES); 
-    double total_trades = TesterStatistics(STAT_TRADES); 
-    return wins / total_trades * 100;
-}
 
 double CustomMax::win_percent_min_trades(int min_resuired_trades){
     double wins = TesterStatistics(STAT_PROFIT_TRADES); 
     double total_trades = TesterStatistics(STAT_TRADES); 
+    double result = wins / total_trades * 100;
 
-    if(total_trades<min_resuired_trades){
+    if(!MathIsValidNumber(result) || total_trades<min_resuired_trades){
         return 0;
     }
 
-    else {
-        return wins / total_trades * 100;
+    else{
+        return result;
     }
 }
+
