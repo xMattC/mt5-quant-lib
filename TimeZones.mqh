@@ -35,30 +35,6 @@ string TimeZones::get_date_string_from_datetime(datetime dt){
    return dt_string;
 }
 
-// bool TimeZones::trading_window(string time_zone, string start_time, string end_time){
-//    // https://www.youtube.com/watch?v=V_qh7sTbl80
-//    // e.g: 
-//    //       bool trade_window  = trading_window(x,x,x);
-//    //       bool long_in       =  trade_window 
-//    //                             && close < ma[0];
-
-//    tz_time = get_timezone_time(time_zone, false);
-//    Print(tz_time);
-
-//    // Get the current date for the required time zone: 
-//    tz_date = get_date_string_from_datetime(tz_time);
-   
-//    // Define the start and end times on correct date:
-//    time_start = StringToTime(tz_date + start_time);
-//    time_end = StringToTime(tz_date + end_time);
-
-//    if(time_start>time_end){
-//       time_start = time_start - PeriodSeconds(PERIOD_D1);
-//    }
-//    is_time = tz_time >= time_start && tz_time < time_end;
-
-//    return is_time;
-// }
 
 datetime TimeZones::get_timezone_time(string time_zone, bool print_time){
    // https://www.mql5.com/en/code/45287
