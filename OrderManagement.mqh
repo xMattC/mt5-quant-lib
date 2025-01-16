@@ -16,7 +16,6 @@ class OrderManagment : public CObject{
       CPositionInfo  m_position;
       COrderInfo     m_order; 
 
- 
       double   stop_loss; 
       double   take_profit;  
       ulong    posTicket;
