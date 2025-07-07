@@ -42,16 +42,20 @@ double MarketDataUtils::get_latest_buffer_value(int handle) {
    return 0.0;
 }
 
-// Retrieves a historical buffer value at specified shift
+// shift = 0 refers to the live candle (still forming)
+// shift = 1 is the most recently closed candle
+// shift = 2 is the one before that, etc.
 double MarketDataUtils::get_buffer_value(int handle, int shift) {
-   double val[];
-   ArraySetAsSeries(val, true);
 
-   if (CopyBuffer(handle, 0, shift, 1, val) == 1)
-      return val[0];  // Historical value at given shift
+    double val[];
+    ArraySetAsSeries(val, true);
 
-   return 0.0;
+    if (CopyBuffer(handle, 0, shift, 1, val) == 1 && val[0] != EMPTY_VALUE)
+        return val[0];
+
+    return EMPTY_VALUE;
 }
+
 
 // Adjusts the point value for symbol to account for fractional pips (e.g., 5-digit brokers)
 double MarketDataUtils::adjusted_point(string symbol) {
