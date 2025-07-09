@@ -1,96 +1,139 @@
-// File: MyLibs/Utils/AtrBands.mqh
+#include <MyLibs/Utils/MarketDataUtils.mqh>
 
 class AtrBands {
-   protected:
-    string symbol;
-    int atr_period;
-    ENUM_TIMEFRAMES timeframe;
-    string prefix;
-    color upper_color;
-    color lower_color;
-    color mid_color;
-    int line_width;
-    bool plot_bands;
-    int atr_handle;
+   private:
+    MarketDataUtils market_data_utils;
 
    public:
-    AtrBands(string _symbol, int _atr_period = 14, ENUM_TIMEFRAMES _timeframe = PERIOD_CURRENT,
-             color _upper = clrDodgerBlue, color _lower = clrDodgerBlue, color _mid = clrDodgerBlue,
-             int _width = 1, bool plot = true);
+    // Core band accessors
+    double upper_band(string symbol, double trendline_var, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, 
+                        color clr = clrDodgerBlue, int width = 1, bool plot = true);
 
-    double upper_band(double baseline, int shift = 1, double mult = 1.0);
-    double lower_band(double baseline, int shift = 1, double mult = 1.0);
-    double middle_band(double baseline, int shift = 1);
+    double lower_band(string symbol, double trendline_var, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, 
+                        color clr = clrDodgerBlue, int width = 1, bool plot = true);
 
+    double middle_band(string symbol, double trendline_var, ENUM_TIMEFRAMES tf, int shift = 1, color clr = clrDodgerBlue, int width = 1, 
+                        bool plot = true);
+
+    // Band checkers
+    bool inside_upper_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, bool plot = true);
+
+    bool inside_lower_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, bool plot = true);
+
+    bool crossed_below_upper_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, 
+                                    bool plot = true);
+
+    bool crossed_above_lower_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult = 1.0, int shift = 1, 
+                                    bool plot = true);
    protected:
-    double get_atr(int shift);
-    void draw_line(string name, int shift, double price, color clr);
+    double get_atr(string symbol, int atr_period, ENUM_TIMEFRAMES tf, int shift);
+    void draw_line(string name, double price, color clr, int width);
 };
 
-// Constructor
-AtrBands::AtrBands(string _symbol, int _atr_period, ENUM_TIMEFRAMES _timeframe,
-                   color _upper, color _lower, color _mid, int _width, bool plot) {
-    symbol = _symbol;
-    atr_period = _atr_period;
-    timeframe = _timeframe;
-    prefix = "ATRBand";
-    upper_color = _upper;
-    lower_color = _lower;
-    mid_color = _mid;
-    line_width = _width;
-    plot_bands = plot;
+// -------------------
+// Public Methods
+// -------------------
 
-    atr_handle = iATR(symbol, timeframe, atr_period);
-    if (atr_handle == INVALID_HANDLE) {
-        Print("Failed to create ATR handle for symbol: ", symbol);
-    }
-}
-
-// Public methods
-double AtrBands::upper_band(double baseline, int shift, double mult) {
-    double atr = get_atr(shift);
-    double upper = baseline + atr * mult;
-    if (plot_bands) draw_line(prefix + "_Upper_" + symbol, shift, upper, upper_color);
+double AtrBands::upper_band(string symbol, double trendline_var, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, color clr, int width, bool plot) {
+    double atr = get_atr(symbol, atr_period, tf, shift);
+    double upper = trendline_var + atr * mult;
+    if (plot && shift == 1) draw_line("ATRBand_Upper_" + symbol, upper, clr, width); // persistent line
     return upper;
 }
 
-double AtrBands::lower_band(double baseline, int shift, double mult) {
-    double atr = get_atr(shift);
-    double lower = baseline - atr * mult;
-    if (plot_bands) draw_line(prefix + "_Lower_" + symbol, shift, lower, lower_color);
+double AtrBands::lower_band(string symbol, double trendline_var, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, color clr, int width, bool plot) {
+    double atr = get_atr(symbol, atr_period, tf, shift);
+    double lower = trendline_var - atr * mult;
+    if (plot && shift == 1) draw_line("ATRBand_Lower_" + symbol, lower, clr, width); // persistent line
     return lower;
 }
 
-double AtrBands::middle_band(double baseline, int shift) {
-    if (plot_bands) draw_line(prefix + "_Mid_" + symbol, shift, baseline, mid_color);
-    return baseline;
+double AtrBands::middle_band(string symbol, double trendline_var, ENUM_TIMEFRAMES tf, int shift, color clr, int width, bool plot) {
+    if (plot && shift == 1) draw_line("ATRBand_Mid_" + symbol, trendline_var, clr, width); // persistent line
+    return trendline_var;
 }
 
-// Internal: Get ATR value from buffer
-double AtrBands::get_atr(int shift) {
-    if (atr_handle == INVALID_HANDLE) return 0;
+bool AtrBands::inside_upper_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, bool plot) {
+    double price = iClose(symbol, tf, shift);
+    double trendline_var = market_data_utils.get_buffer_value(handle, shift);
+    double upper = upper_band(symbol, trendline_var, atr_period, tf, mult, shift, clrDodgerBlue, 1, plot);
+
+    if (price == EMPTY_VALUE || trendline_var == EMPTY_VALUE || upper == EMPTY_VALUE) return false;
+    return (price > trendline_var && price < upper);
+}
+
+bool AtrBands::inside_lower_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, bool plot) {
+    double price = iClose(symbol, tf, shift);
+    double trendline_var = market_data_utils.get_buffer_value(handle, shift);
+    double lower = lower_band(symbol, trendline_var, atr_period, tf, mult, shift, clrDodgerBlue, 1, plot);
+
+    if (price == EMPTY_VALUE || trendline_var == EMPTY_VALUE || lower == EMPTY_VALUE) return false;
+    return (price < trendline_var && price > lower);
+}
+
+// pull-back inside upper atr band:
+bool AtrBands::crossed_below_upper_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, bool plot) {
+    //--- checked bar
+    double price = iClose(symbol, tf, shift);
+    double trendline_var = market_data_utils.get_buffer_value(handle, shift);
+    double atr_upper_band = upper_band(symbol, trendline_var, atr_period, tf, mult, shift, clrDodgerBlue, 1, plot);
+
+    //--- previous bar
+    double prev_price = iClose(symbol, tf, shift + 1);
+    double prev_trendline_var = market_data_utils.get_buffer_value(handle, shift + 1);
+    double prev_atr_upper_band = upper_band(symbol, prev_trendline_var, atr_period, tf, mult, shift + 1, clrDodgerBlue, 1, plot);
+
+    if (price == EMPTY_VALUE || trendline_var == EMPTY_VALUE || atr_upper_band == EMPTY_VALUE || prev_price == EMPTY_VALUE 
+        || prev_trendline_var == EMPTY_VALUE || prev_atr_upper_band == EMPTY_VALUE) return false;
+
+    return (prev_price > prev_atr_upper_band && price < atr_upper_band);
+}
+
+// pull-back inside lower atr band:
+bool AtrBands::crossed_above_lower_band(string symbol, int handle, int atr_period, ENUM_TIMEFRAMES tf, double mult, int shift, bool plot) {
+    //--- checked bar
+    double price = iClose(symbol, tf, shift);
+    double trendline_var = market_data_utils.get_buffer_value(handle, shift);
+    double atr_lower_band = lower_band(symbol, trendline_var, atr_period, tf, mult, shift, clrDodgerBlue, 1, plot);
+
+    //--- previous bar
+    double prev_price = iClose(symbol, tf, shift + 1);
+    double prev_trendline_var = market_data_utils.get_buffer_value(handle, shift + 1);
+    double prev_atr_lower_band = lower_band(symbol, prev_trendline_var, atr_period, tf, mult, shift + 1, clrDodgerBlue, 1, plot);
+
+    if (price == EMPTY_VALUE || trendline_var == EMPTY_VALUE || atr_lower_band == EMPTY_VALUE || prev_price == EMPTY_VALUE 
+        || prev_trendline_var == EMPTY_VALUE || prev_atr_lower_band == EMPTY_VALUE) return false;
+
+    return (prev_price < prev_atr_lower_band && price > atr_lower_band);
+}
+
+// -------------------
+// Internal Helpers
+// -------------------
+
+double AtrBands::get_atr(string symbol, int atr_period, ENUM_TIMEFRAMES tf, int shift) {
+    int handle = iATR(symbol, tf, atr_period);
+    if (handle == INVALID_HANDLE) {
+        Print("Failed to create ATR handle for ", symbol);
+        return 0.0;
+    }
 
     double buf[];
     ArraySetAsSeries(buf, true);
-    if (CopyBuffer(atr_handle, 0, shift, 1, buf) == 1 && buf[0] != EMPTY_VALUE)
-        return buf[0];
+    if (CopyBuffer(handle, 0, shift, 1, buf) == 1 && buf[0] != EMPTY_VALUE) return buf[0];
 
-    return 0;
+    return 0.0;
 }
 
-// Internal: Draw line for a given price at a bar
-void AtrBands::draw_line(string name, int shift, double price, color clr) {
-    datetime time0 = iTime(symbol, timeframe, shift);
-    datetime time1 = time0 + PeriodSeconds(timeframe);
-
+void AtrBands::draw_line(string name, double price, color clr, int width) {
     if (ObjectFind(0, name) < 0) {
-        ObjectCreate(0, name, OBJ_TREND, 0, time0, price, time1, price);
+        ObjectCreate(0, name, OBJ_HLINE, 0, 0, price);
     } else {
-        ObjectMove(0, name, 0, time0, price);
-        ObjectMove(0, name, 1, time1, price);
+        ObjectSetDouble(0, name, OBJPROP_PRICE, price);
     }
 
     ObjectSetInteger(0, name, OBJPROP_COLOR, clr);
-    ObjectSetInteger(0, name, OBJPROP_WIDTH, line_width);
+    ObjectSetInteger(0, name, OBJPROP_WIDTH, width);
     ObjectSetInteger(0, name, OBJPROP_STYLE, STYLE_DASH);
+    ObjectSetInteger(0, name, OBJPROP_BACK, true);
 }
