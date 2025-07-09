@@ -31,17 +31,6 @@ bool MarketDataUtils::is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, stri
    return false;  // No new bar
 }
 
-// Retrieves the latest value from an indicator buffer (shift 0)
-double MarketDataUtils::get_latest_buffer_value(int handle) {
-   double val[];
-   ArraySetAsSeries(val, true);  // Aligns array with bar indexing (0 = latest)
-
-   if (CopyBuffer(handle, 0, 0, 1, val) == 1)
-      return val[0];  // Latest value at shift 0
-
-   return 0.0;
-}
-
 // shift = 0 refers to the live candle (still forming)
 // shift = 1 is the most recently closed candle
 // shift = 2 is the one before that, etc.
