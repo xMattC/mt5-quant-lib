@@ -2,11 +2,11 @@
 #include <Trade/Trade.mqh>
 
 class EntryOrders {
-   protected:
+protected:
     CTrade trade;
     CalculatePositionData calc;
 
-   public:
+public:
     int count_open_positions(string symbol, int order_side, long _magic_number);
 
     bool open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode,
@@ -15,11 +15,11 @@ class EntryOrders {
     bool open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode,
                           double tp_var, string _lot_mode, double lot_var, long _magic_number);
 
-    bool open_buy_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period,
+    bool open_buy_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                              string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                              long _magic_number);
 
-    bool open_sell_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period,
+    bool open_sell_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                               string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                               long _magic_number);
 
@@ -28,6 +28,7 @@ class EntryOrders {
 
     bool open_runner_sell_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                                 string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number);
+
 };
 
 int EntryOrders::count_open_positions(string symbol, int order_side, long _magic_number) {
@@ -36,8 +37,6 @@ int EntryOrders::count_open_positions(string symbol, int order_side, long _magic
         ulong ticket = PositionGetTicket(i);
         if (PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == _magic_number) {
             int type = (int) PositionGetInteger(POSITION_TYPE);
-
-            // Count: order_side == 0 (both sides), order_side == 1 (longs only), order_side == 2 (shorts only)
             if (order_side == 0 || (order_side == 1 && type == POSITION_TYPE_BUY) || (order_side == 2 && type == POSITION_TYPE_SELL)) {
                 count++;
             }
@@ -49,7 +48,6 @@ int EntryOrders::count_open_positions(string symbol, int order_side, long _magic
 bool EntryOrders::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                   string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
-
     double current_price = SymbolInfoDouble(symbol, SYMBOL_ASK);
     if (count_open_positions(symbol, 1, _magic_number) > 0) return false;
 
@@ -58,15 +56,21 @@ bool EntryOrders::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES
     double sl_distance = current_price - stop_loss;
     double lots = calc.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = "Magic Number: " + IntegerToString(_magic_number);
-    return trade.PositionOpen(symbol, ORDER_TYPE_BUY, lots, current_price, stop_loss, take_profit, comment);
+    bool result = trade.PositionOpen(symbol, ORDER_TYPE_BUY, lots, current_price, stop_loss, take_profit, comment);
+    if (!result) Print("Trade open failed for BUY ", symbol);
+    return result;
 }
 
 bool EntryOrders::open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                    string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
-
     double current_price = SymbolInfoDouble(symbol, SYMBOL_BID);
     if (count_open_positions(symbol, 2, _magic_number) > 0) return false;
 
@@ -75,12 +79,19 @@ bool EntryOrders::open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAME
     double sl_distance = stop_loss - current_price;
     double lots = calc.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = "Magic Number: " + IntegerToString(_magic_number);
-    return trade.PositionOpen(symbol, ORDER_TYPE_SELL, lots, current_price, stop_loss, take_profit, comment);
+    bool result = trade.PositionOpen(symbol, ORDER_TYPE_SELL, lots, current_price, stop_loss, take_profit, comment);
+    if (!result) Print("Trade open failed for SELL ", symbol);
+    return result;
 }
 
-bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period,
+bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                                       string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                       long _magic_number) {
     if (!condition) return false;
@@ -91,12 +102,19 @@ bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entr
     double sl_distance = entry_price - stop_loss;
     double lots = calc.calculate_lots(symbol, sl_distance, entry_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for BUY STOP ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = "Magic Number: " + IntegerToString(_magic_number);
-    return trade.BuyStop(lots, entry_price, symbol, stop_loss, take_profit, ORDER_TIME_SPECIFIED, experation, comment);
+    bool result = trade.BuyStop(lots, entry_price, symbol, stop_loss, take_profit, ORDER_TIME_SPECIFIED, expiration, comment);
+    if (!result) Print("BuyStop order failed for ", symbol);
+    return result;
 }
 
-bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double entry_price, datetime experation, ENUM_TIMEFRAMES atr_period,
+bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                                        string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                        long _magic_number) {
     if (!condition) return false;
@@ -107,9 +125,16 @@ bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double ent
     double sl_distance = stop_loss - entry_price;
     double lots = calc.calculate_lots(symbol, sl_distance, entry_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for SELL STOP ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = "Magic Number: " + IntegerToString(_magic_number);
-    return trade.SellStop(lots, entry_price, symbol, stop_loss, take_profit, ORDER_TIME_SPECIFIED, experation, comment);
+    bool result = trade.SellStop(lots, entry_price, symbol, stop_loss, take_profit, ORDER_TIME_SPECIFIED, expiration, comment);
+    if (!result) Print("SellStop order failed for ", symbol);
+    return result;
 }
 
 bool EntryOrders::open_runner_buy_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode,
@@ -124,9 +149,16 @@ bool EntryOrders::open_runner_buy_order_with_virtual_tp(string symbol, bool cond
     double sl_distance = current_price - stop_loss;
     double lots = calc.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for runner BUY ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = StringFormat("runner_tp:%.5f", virtual_tp);
-    return trade.PositionOpen(symbol, ORDER_TYPE_BUY, lots, current_price, stop_loss, 0.0, comment);
+    bool result = trade.PositionOpen(symbol, ORDER_TYPE_BUY, lots, current_price, stop_loss, 0.0, comment);
+    if (!result) Print("Runner BUY order failed for ", symbol);
+    return result;
 }
 
 bool EntryOrders::open_runner_sell_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode,
@@ -138,11 +170,17 @@ bool EntryOrders::open_runner_sell_order_with_virtual_tp(string symbol, bool con
 
     double stop_loss = calc.calculate_stoploss(symbol, current_price, 2, _sl_mode, sl_var, atr_period);
     double virtual_tp = calc.calculate_take_profit(symbol, current_price, stop_loss, 2, _tp_mode, tp_var, atr_period);
-
     double sl_distance = stop_loss - current_price;
     double lots = calc.calculate_lots(symbol, sl_distance, current_price, _lot_mode, lot_var);
 
+    if (lots <= 0) {
+        Print("Lot calculation failed for runner SELL ", symbol);
+        return false;
+    }
+
     trade.SetExpertMagicNumber(_magic_number);
     string comment = StringFormat("runner_tp:%.5f", virtual_tp);
-    return trade.PositionOpen(symbol, ORDER_TYPE_SELL, lots, current_price, stop_loss, 0.0, comment);
+    bool result = trade.PositionOpen(symbol, ORDER_TYPE_SELL, lots, current_price, stop_loss, 0.0, comment);
+    if (!result) Print("Runner SELL order failed for ", symbol);
+    return result;
 }
