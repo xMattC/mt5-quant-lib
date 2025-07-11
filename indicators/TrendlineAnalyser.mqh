@@ -13,16 +13,16 @@ class TrendlineAnalyser {
     // - handle: the indicator handle for the trendline (e.g., iMA handle)
     // - cross_long: output bool set to true if a bullish cross is detected
     // - cross_short: output bool set to true if a bearish cross is detected
-    void detect_cross(string symbol, int handle, bool& cross_long, bool& cross_short) {
+    void detect_cross(string symbol, int handle, bool& cross_long, bool& cross_short, int shift=1) {
         cross_long = false;
         cross_short = false;
 
         // --- Retrieve prices and trendline values from last 2 closed bars
-        double price = iClose(symbol, PERIOD_CURRENT, 1);       // most recent closed bar
-        double prev_price = iClose(symbol, PERIOD_CURRENT, 2);  // bar before that
+        double price = iClose(symbol, PERIOD_CURRENT, shift);       // most recent closed bar
+        double prev_price = iClose(symbol, PERIOD_CURRENT, shift + 1);  // bar before that
 
-        double trendline = market_data_utils.get_buffer_value(handle, 1);       // trendline now
-        double prev_trendline = market_data_utils.get_buffer_value(handle, 2);  // trendline before
+        double trendline = market_data_utils.get_buffer_value(handle, shift);       // trendline now
+        double prev_trendline = market_data_utils.get_buffer_value(handle, shift+1);  // trendline before
 
         // --- Exit early if any of the data is missing or invalid
         if (price == EMPTY_VALUE || prev_price == EMPTY_VALUE || trendline == EMPTY_VALUE || prev_trendline == EMPTY_VALUE) {

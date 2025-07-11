@@ -15,11 +15,20 @@ class SignalStateTracker {
         last_signal_short = -1000;
     }
 
-    // Updates the signal for both long and short directions in one call, if the respective triggers are true.
-    // curr_bar should refer to the last CLOSED bar (typically bar index 1).
-    void update_signal(bool trig_long, bool trig_short, int curr_bar=1) {
-        if (trig_long) last_signal_long = curr_bar;
-        if (trig_short) last_signal_short = curr_bar;
+    // Updates the signal tracker based on trigger presence per bar.
+    // If signal is detected, sets to 1. If not, increments previous value.
+    void update_signal_tracker(bool signal_long, bool signal_short) {
+        if (signal_long) {
+            last_signal_long = 1;
+        } else if (last_signal_long > 0) {
+            last_signal_long++;
+        }
+
+        if (signal_short) {
+            last_signal_short = 1;
+        } else if (last_signal_short > 0) {
+            last_signal_short++;
+        }
     }
 
     // Returns true if a long signal occurred within the last `max_bars` bars.
