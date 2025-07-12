@@ -37,6 +37,7 @@
 #include <MyLibs/Utils/MarketDataUtils.mqh>
 #include <MyLibs/Utils/MultiSymbolSignalTracker.mqh>
 #include <MyLibs/Utils/ResourceManager.mqh>
+
 //--- classes
 AdjustPosition adjust_pos;
 AtrBands atr_bands;
@@ -48,25 +49,35 @@ MultiSymbolSignalTracker track_trigger_signal;
 ResourceManager resource_manager;
 TestDataSplit data_split;
 TrendlineAnalyser tl_tools;
+
 //--- Inputs
-input LOT_MODE inp_lot_mode = LOT_MODE_PCT_RISK;
-string lot_mode = EnumToString(inp_lot_mode);
-input double inp_lot_var = 2;
-input SL_MODE inp_sl_mode = SL_ATR_MULTIPLE;
-string sl_mode = EnumToString(inp_sl_mode);
-input double inp_sl_var = 1.5;
-input TP_MODE inp_tp_mode = TP_ATR_MULTIPLE;
-string tp_mode = EnumToString(inp_tp_mode);
-input double inp_tp_var = 1;
-input CUSTOM_MAX_TYPE inp_custom_criteria = CM_WIN_PERCENT;
-input int inp_opt_min_trades = 0;
-input MODE_SPLIT_DATA inp_data_split_method = NO_SPLIT;
-input int inp_force_opt = 1;
-input group "-----------------------------------------";
-input int InpTrendlinePeriod = 100;
-input int InpTriggerPeriod = 14;
-input int InpConformationPeriod = 50;
-input int InpExitPeriod = 5;
+//+------------------------------------------------------------------+
+//| RISK AND POSITION SETTINGS                                       |
+//+------------------------------------------------------------------+
+input LOT_MODE inp_lot_mode = LOT_MODE_PCT_RISK;      // Method used for position sizing (e.g., fixed lot, or % risk)
+string lot_mode = EnumToString(inp_lot_mode);         // convert to string
+input double inp_lot_var = 2;                         // Lot value or risk percentage (depending on selected lot mode)
+input SL_MODE inp_sl_mode = SL_ATR_MULTIPLE;          // Stop Loss method (e.g., ATR-based, fixed value, etc.)
+string sl_mode = EnumToString(inp_sl_mode);           // convert to  string
+input double inp_sl_var = 1.5;                        // SL parameter (e.g., ATR multiplier or fixed points)
+input TP_MODE inp_tp_mode = TP_ATR_MULTIPLE;          // Take Profit method (e.g., ATR-based, fixed value, etc.)
+string tp_mode = EnumToString(inp_tp_mode);           // convert to  string
+input double inp_tp_var = 1;                          // TP parameter (e.g., ATR multiplier or fixed points)
+//+------------------------------------------------------------------+
+//| BACKTESTING & OPTIMIZATION SETTINGS                              |
+//+------------------------------------------------------------------+
+input CUSTOM_MAX_TYPE inp_custom_criteria = CM_WIN_PERCENT;    // Custom performance metric to use in OnTester()
+input int inp_opt_min_trades = 0;                              // Minimum trades required to validate backtest result
+input MODE_SPLIT_DATA inp_data_split_method = NO_SPLIT;        // Method used to split data (e.g., train/test split)
+input int inp_force_opt = 1;                                   // Forces optimizer to call OnTester() even if not in training set
+//+------------------------------------------------------------------+
+//| INDICATOR PERIODS                                                |
+//+------------------------------------------------------------------+
+input int InpTrendlinePeriod = 100;         // Lookback period for moving average used in trendline
+input int InpTriggerPeriod = 14;            // RSI period used to trigger entries
+input int InpConformationPeriod = 50;       // CCI period used for confirming trend direction
+input int InpExitPeriod = 5;                // Stochastic period used to signal exits
+
 //--- Global vars/arrays
 int magic_number = 1000;
 int runner_magic = magic_number + 1;
