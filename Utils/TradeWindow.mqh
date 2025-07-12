@@ -12,6 +12,23 @@ public:
    bool trade_window(string t1, string t2, string time_zone = "Broker", bool plot_range_inp = true);
 };
 
+// ---------------------------------------------------------------------
+// Determines whether the current time is inside a defined trade session.
+//
+// Parameters:
+// - t1              : Start time string (e.g., "22:00").
+// - t2              : End time string (e.g., "01:00").
+// - time_zone       : The timezone of input times (default = "Broker").
+// - plot_range_inp  : If true, draws vertical lines for start/end.
+//
+// Returns:
+// - true if current time is within the session window, false otherwise.
+//
+// Logic:
+// - Handles overnight sessions (e.g. 22:00–01:00) correctly.
+// - Automatically rolls the window to the next day when expired.
+// - Uses TimeZones class to convert time to broker timezone.
+// ---------------------------------------------------------------------
 bool TradeSessionUtils::trade_window(string t1, string t2, string time_zone, bool plot_range_inp) {
    datetime _t1 = StringToTime(t1);   // Convert string to datetime
    datetime _t2 = StringToTime(t2);   // Convert string to datetime

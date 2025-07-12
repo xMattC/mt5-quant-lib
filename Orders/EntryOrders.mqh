@@ -28,9 +28,19 @@ public:
 
     bool open_runner_sell_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                                 string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number);
-
 };
 
+// ---------------------------------------------------------------------
+// Counts open positions by symbol, side, and magic number.
+//
+// Parameters:
+// - symbol        : Symbol to check.
+// - order_side    : 1 = Buy, 2 = Sell, 0 = Any.
+// - _magic_number : Magic number to filter.
+//
+// Returns:
+// - Number of matching open positions.
+// ---------------------------------------------------------------------
 int EntryOrders::count_open_positions(string symbol, int order_side, long _magic_number) {
     int count = 0;
     for (int i = PositionsTotal() - 1; i >= 0; i--) {
@@ -45,6 +55,24 @@ int EntryOrders::count_open_positions(string symbol, int order_side, long _magic
     return count;
 }
 
+// ---------------------------------------------------------------------
+// Opens a market BUY position.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, trade will not execute.
+// - atr_period    : Timeframe for ATR-based SL/TP.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable (e.g., pips or ATR multiplier).
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable.
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for trade.
+//
+// Returns:
+// - True if trade was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                   string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
@@ -68,6 +96,24 @@ bool EntryOrders::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Opens a market SELL position.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, trade will not execute.
+// - atr_period    : Timeframe for ATR-based SL/TP.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable (e.g., pips or ATR multiplier).
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable.
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for trade.
+//
+// Returns:
+// - True if trade was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var,
                                    string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
@@ -91,6 +137,26 @@ bool EntryOrders::open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAME
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Opens a pending BUY STOP order.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, order will not be placed.
+// - entry_price   : Trigger price for Buy Stop.
+// - expiration    : Expiration time for pending order.
+// - atr_period    : Timeframe for ATR-based SL/TP.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable.
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable.
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for order.
+//
+// Returns:
+// - True if order was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                                       string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                       long _magic_number) {
@@ -114,6 +180,26 @@ bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entr
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Opens a pending SELL STOP order.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, order will not be placed.
+// - entry_price   : Trigger price for Sell Stop.
+// - expiration    : Expiration time for pending order.
+// - atr_period    : Timeframe for ATR-based SL/TP.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable.
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable.
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for order.
+//
+// Returns:
+// - True if order was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double entry_price, datetime expiration, ENUM_TIMEFRAMES atr_period,
                                        string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                        long _magic_number) {
@@ -137,6 +223,24 @@ bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double ent
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Opens a market BUY runner with virtual TP in comment.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, trade will not execute.
+// - atr_period    : Timeframe for ATR-based SL.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable.
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable (used for virtual TP).
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for trade.
+//
+// Returns:
+// - True if trade was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_runner_buy_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode,
                                                         double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                                         long _magic_number) {
@@ -161,6 +265,24 @@ bool EntryOrders::open_runner_buy_order_with_virtual_tp(string symbol, bool cond
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Opens a market SELL runner with virtual TP in comment.
+//
+// Parameters:
+// - symbol        : Symbol to trade.
+// - condition     : If false, trade will not execute.
+// - atr_period    : Timeframe for ATR-based SL.
+// - _sl_mode      : SL calculation method.
+// - sl_var        : SL variable.
+// - _tp_mode      : TP calculation method.
+// - tp_var        : TP variable (used for virtual TP).
+// - _lot_mode     : Lot calculation method.
+// - lot_var       : Lot sizing variable.
+// - _magic_number : Magic number for trade.
+//
+// Returns:
+// - True if trade was placed successfully.
+// ---------------------------------------------------------------------
 bool EntryOrders::open_runner_sell_order_with_virtual_tp(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode,
                                                          double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                                          long _magic_number) {

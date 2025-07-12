@@ -3,6 +3,12 @@
 #include <MyLibs/Utils/AtrHandleManager.mqh>
 #include <Trade/Trade.mqh>
 
+// ---------------------------------------------------------------------
+// CLASS: CalculatePositionData
+// ---------------------------------------------------------------------
+// Provides core logic for computing stop loss, take profit, lot size,
+// and trading costs based on symbol, price, and risk parameters.
+// ---------------------------------------------------------------------
 class CalculatePositionData : public CObject {
 protected:
     CTrade trade;
@@ -20,8 +26,20 @@ public:
     double calculate_trading_cost(string symbol, ulong ticket);
 };
 
-//+------------------------------------------------------------------+
-
+// ---------------------------------------------------------------------
+// Calculates stop loss based on selected method.
+//
+// Parameters:
+// - symbol    : Symbol for the trade.
+// - price     : Entry price.
+// - order_side: 1 = Buy, 2 = Sell.
+// - mode_sl   : SL method ("NO_STOPLOSS", "SL_FIXED_PIPS", etc).
+// - sl_var    : SL parameter (pips, %, ATR multiplier, or absolute).
+// - atr_tf    : Timeframe for ATR.
+//
+// Returns:
+// - Calculated SL price, or 0 if invalid.
+// ---------------------------------------------------------------------
 double CalculatePositionData::calculate_stoploss(string symbol, double price, int order_side, string mode_sl, double sl_var, ENUM_TIMEFRAMES atr_tf) {
     double sl = 0;
 
@@ -55,8 +73,21 @@ double CalculatePositionData::calculate_stoploss(string symbol, double price, in
     return sl;
 }
 
-//+------------------------------------------------------------------+
-
+// ---------------------------------------------------------------------
+// Calculates take profit based on selected method.
+//
+// Parameters:
+// - symbol    : Symbol for the trade.
+// - price     : Entry price.
+// - stoploss  : SL value (used in TP/SL ratio mode).
+// - order_side: 1 = Buy, -1 = Sell.
+// - mode_tp   : TP method ("NO_TAKE_PROFIT", "TP_FIXED_PIPS", etc).
+// - tp_var    : TP parameter (pips, %, ATR multiplier, SL multiple).
+// - atr_tf    : Timeframe for ATR.
+//
+// Returns:
+// - Calculated TP price, or 0 if invalid.
+// ---------------------------------------------------------------------
 double CalculatePositionData::calculate_take_profit(string symbol, double price, double stoploss, int order_side, string mode_tp, double tp_var, ENUM_TIMEFRAMES atr_tf) {
     double tp = 0;
 
@@ -96,8 +127,19 @@ double CalculatePositionData::calculate_take_profit(string symbol, double price,
     return tp;
 }
 
-//+------------------------------------------------------------------+
-
+// ---------------------------------------------------------------------
+// Calculates lot size based on selected lot mode.
+//
+// Parameters:
+// - symbol    : Symbol for the trade.
+// - sl_distance: SL distance in points.
+// - price     : Current price.
+// - mode_lot  : Lot mode ("LOT_MODE_FIXED", "LOT_MODE_PCT_RISK", etc).
+// - lot_var   : Value for lot calculation.
+//
+// Returns:
+// - Computed lot size (rounded and validated).
+// ---------------------------------------------------------------------
 double CalculatePositionData::calculate_lots(string symbol, double sl_distance, double price, string mode_lot, double lot_var) {
     double lots = 0;
     double tick_size = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE);
@@ -125,8 +167,16 @@ double CalculatePositionData::calculate_lots(string symbol, double sl_distance, 
     return lots;
 }
 
-//+------------------------------------------------------------------+
-
+// ---------------------------------------------------------------------
+// Validates and adjusts lot size to symbol constraints.
+//
+// Parameters:
+// - lots   : Input/output lot size.
+// - symbol : Trading symbol.
+//
+// Returns:
+// - true if lots are valid after correction.
+// ---------------------------------------------------------------------
 bool CalculatePositionData::check_lots(double& lots, string symbol) {
     double min = SymbolInfoDouble(symbol, SYMBOL_VOLUME_MIN);
     double max = SymbolInfoDouble(symbol, SYMBOL_VOLUME_MAX);
@@ -146,8 +196,17 @@ bool CalculatePositionData::check_lots(double& lots, string symbol) {
     return true;
 }
 
-//+------------------------------------------------------------------+
-
+// ---------------------------------------------------------------------
+// Normalizes price to the nearest valid tick size.
+//
+// Parameters:
+// - price          : Raw price.
+// - normalizedPrice: Output normalized price.
+// - symbol         : Trading symbol.
+//
+// Returns:
+// - true if successful, false if tick size lookup failed.
+// ---------------------------------------------------------------------
 bool CalculatePositionData::normalise_price(double price, double& normalizedPrice, string symbol) {
     double tick_size;
     if (!SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE, tick_size)) {
@@ -159,17 +218,3 @@ bool CalculatePositionData::normalise_price(double price, double& normalizedPric
     normalizedPrice = NormalizeDouble(MathRound(price / tick_size) * tick_size, digits);
     return true;
 }
-
-//+------------------------------------------------------------------+
-
-// double CalculatePositionData::calculate_trading_cost(string symbol, ulong ticket) {
-//     position.SelectByTicket(ticket);
-
-//     double swap = PositionGetDouble(POSITION_SWAP);
-//     double commission = PositionGetDouble(POSITION_COMMISSION);
-//     double tick_size = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_SIZE);
-//     double tick_value = SymbolInfoDouble(symbol, SYMBOL_TRADE_TICK_VALUE);
-//     double lots = PositionGetDouble(POSITION_VOLUME);
-
-//     return -1.0 * ((commission + swap) / tick_value * tick_size / lots);
-// }

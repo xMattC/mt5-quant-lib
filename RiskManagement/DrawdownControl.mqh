@@ -1,11 +1,11 @@
 #property library
 #include <Trade/Trade.mqh>
-#include <MyLibs/Utils/BarUtils.mqh>
+#include <MyLibs/Utils/MarketDataUtils.mqh>
 
 class DrawdownControl : public CObject {
   protected:
       CTrade trade;
-      BarUtils bar_utils;
+      MarketDataUtils m_utils;
 
       string data_file;
       double daily_max_dd_per;
@@ -31,6 +31,17 @@ class DrawdownControl : public CObject {
       double  lot_correction_dynamic(double acc_dd_percent, double min_lot_factor, double max_lot_factor);
 };
 
+// ---------------------------------------------------------------------
+// Initializes the drawdown control with input parameters and reads
+// or resets persistent drawdown state.
+//
+// Parameters:
+// - inp_data_file        : Filename for drawdown data storage.
+// - inp_acc_max_dd_per   : Max absolute drawdown percentage.
+// - inp_daily_max_dd_per : Max daily drawdown percentage.
+// - inp_daily_reset_time : Reset time (e.g., "00:00").
+// - inp_print_statments  : Optional flag to print debug info.
+// ---------------------------------------------------------------------
 void DrawdownControl::init_dd_control(string inp_data_file, double inp_acc_max_dd_per, double inp_daily_max_dd_per, string inp_daily_reset_time, bool inp_print_statments = true) {
 
    data_file         = inp_data_file;
@@ -82,6 +93,13 @@ void DrawdownControl::init_dd_control(string inp_data_file, double inp_acc_max_d
     print_messages();
 }
 
+// ---------------------------------------------------------------------
+// Checks if current equity has breached the daily drawdown threshold.
+// If so, closes all trades and cancels orders.
+//
+// Returns:
+// - true if daily drawdown limit has been reached.
+// ---------------------------------------------------------------------
 bool DrawdownControl::determine_daily_dd_limit() {
 
     // Reset max equity at the start of each day:
@@ -116,7 +134,19 @@ bool DrawdownControl::determine_daily_dd_limit() {
     return daily_dd_limit_reached;
 }
 
-// Reduces lot size as account apporchaes max allowed drawdown limit. 
+// ---------------------------------------------------------------------
+// Calculates a corrected lot multiplier based on account drawdown.
+//
+// Parameters:
+// - acc_equity_start : Starting equity reference.
+// - min_lot_factor   : Minimum lot scaling factor.
+// - max_lot_factor   : Maximum lot scaling factor.
+// - dynm_lot_factor  : Enable trailing dynamic lot logic.
+// - dlf_trail_per    : Percent buffer for dynamic trail.
+//
+// Returns:
+// - Scaled lot factor between min and max bounds.
+// --------------------------------------------------------------------- 
 double DrawdownControl::lot_correction_factor(double acc_equity_start, double min_lot_factor, double max_lot_factor, bool dynm_lot_factor=false, double dlf_trail_per=20) {
 
    double account_value = fmin(AccountInfoDouble(ACCOUNT_EQUITY), AccountInfoDouble(ACCOUNT_BALANCE));
@@ -147,7 +177,17 @@ double DrawdownControl::lot_correction_factor(double acc_equity_start, double mi
    return max_lot_factor;
 }
 
-
+// ---------------------------------------------------------------------
+// Computes dynamic lot factor based on trailing equity bounds.
+//
+// Parameters:
+// - acc_dd_percent   : Dynamic trailing buffer in percent.
+// - min_lot_factor   : Minimum lot factor.
+// - max_lot_factor   : Maximum lot factor.
+//
+// Returns:
+// - Interpolated lot factor.
+// ---------------------------------------------------------------------
 double DrawdownControl::lot_correction_dynamic(double acc_dd_percent, double min_lot_factor, double max_lot_factor) {
 
    double account_value = fmin(AccountInfoDouble(ACCOUNT_EQUITY), AccountInfoDouble(ACCOUNT_BALANCE));
@@ -167,7 +207,7 @@ double DrawdownControl::lot_correction_dynamic(double acc_dd_percent, double min
    }
 
    // back-up to file every hour:
-   if(bar_utils.is_new_bar(_Symbol, PERIOD_H1) == true){
+   if(m_utils.is_new_bar(_Symbol, PERIOD_H1) == true){
       write_global_var_data();
    }
 

@@ -50,7 +50,6 @@ class RangeCalculator : public CObject{
 
     public:
         void calculate_range();
-
         double get_range_high();   
         double get_range_low();        
         double get_range_mid();   
@@ -65,6 +64,18 @@ class RangeCalculator : public CObject{
 
 };
 
+// ---------------------------------------------------------------------
+// Sets the allowed days for range calculation.
+//
+// Parameters:
+// - _inp_sun : Allow Sunday.
+// - _inp_mon : Allow Monday.
+// - _inp_tue : Allow Tuesday.
+// - _inp_wed : Allow Wednesday.
+// - _inp_thu : Allow Thursday.
+// - _inp_fri : Allow Friday.
+// - _inp_sat : Allow Saturday.
+// ---------------------------------------------------------------------
 void RangeCalculator::range_days(bool _inp_sun, bool _inp_mon, bool _inp_tue, bool _inp_wed, bool _inp_thu, bool _inp_fri, bool _inp_sat){
     sun = _inp_sun;
     mon = _inp_mon;
@@ -76,6 +87,22 @@ void RangeCalculator::range_days(bool _inp_sun, bool _inp_mon, bool _inp_tue, bo
     days_initlised = true;
 }
 
+// ---------------------------------------------------------------------
+// Initializes the range parameters.
+//
+// Parameters:
+// - inp_symbol       : The symbol for the range.
+// - _calc_period     : Timeframe for range calculation.
+// - t1               : Start time string.
+// - t2               : End time string.
+// - t3               : Expiry time string.
+// - t4               : Close time string.
+// - time_zone        : Timezone name.
+// - plot_range_inp   : Whether to plot the range.
+//
+// Returns:
+// - true if initialization was successful; false otherwise.
+// ---------------------------------------------------------------------
 bool RangeCalculator::initilise_range(string inp_symbol, ENUM_TIMEFRAMES _calc_period, string t1, string t2, string t3, string t4, string time_zone, bool plot_range_inp){
     inp_r_start_string = t1;
     inp_timezone = time_zone;
@@ -113,7 +140,18 @@ bool RangeCalculator::initilise_range(string inp_symbol, ENUM_TIMEFRAMES _calc_p
     return true;    
 }
 
-
+// ---------------------------------------------------------------------
+// Converts time input strings to time deltas for range definition.
+//
+// Parameters:
+// - t1 : Start time string.
+// - t2 : End time string.
+// - t3 : Expiry time string.
+// - t4 : Close time string.
+//
+// Returns:
+// - true if times were converted successfully; false on error.
+// ---------------------------------------------------------------------
 bool RangeCalculator::convert_input_time_strings(string t1, string t2, string t3, string t4){
 
     datetime _t1 = StringToTime(t1);
@@ -149,44 +187,93 @@ bool RangeCalculator::convert_input_time_strings(string t1, string t2, string t3
     return true;
 }
 
-// high of the range
+// ---------------------------------------------------------------------
+// Returns the high value of the current range.
+//
+// Returns:
+// - High price of the range.
+// ---------------------------------------------------------------------
 double RangeCalculator::get_range_high(){
         return high;
 };
 
-// low of the range
+// ---------------------------------------------------------------------
+// Returns the low value of the current range.
+//
+// Returns:
+// - Low price of the range.
+// ---------------------------------------------------------------------
 double RangeCalculator::get_range_low(){
     return low;
 };
 
-// mid of the range
+// ---------------------------------------------------------------------
+// Returns the mid value of the current range.
+//
+// Returns:
+// - Mid price of the range.
+// ---------------------------------------------------------------------
 double RangeCalculator::get_range_mid(){
     return mid;
 };
 
-
+// ---------------------------------------------------------------------
+// Returns the start time of the current range.
+//
+// Returns:
+// - Range start time.
+// ---------------------------------------------------------------------
 datetime RangeCalculator::get_range_start(){
     return start_time;
 };
 
+// ---------------------------------------------------------------------
+// Returns the end time of the current range.
+//
+// Returns:
+// - Range end time.
+// ---------------------------------------------------------------------
 datetime RangeCalculator::get_range_end(){
     return end_time;
 };
 
+
+// ---------------------------------------------------------------------
+// Returns the expiration time for range-based orders.
+//
+// Returns:
+// - Order expiration time.
+// ---------------------------------------------------------------------
 datetime RangeCalculator::get_order_expire_time(){
     return order_expire_time;
 };
 
+// ---------------------------------------------------------------------
+// Returns the close time of the current range.
+//
+// Returns:
+// - Range close time.
+// ---------------------------------------------------------------------
 datetime RangeCalculator::get_range_close(){
     return close_time;
 };
 
-// flag if a high breakout occurred
+// ---------------------------------------------------------------------
+// Returns the high breakout flag of the current range.
+//
+// Returns:
+// - true if high breakout occurred; false otherwise.
+// ---------------------------------------------------------------------
 bool RangeCalculator::get_range_high_breakout(){
     return f_high_breakout;
 };
 
-// flag if a low breakout occurred 
+// ---------------------------------------------------------------------
+// Returns the low breakout flag of the current range.
+//
+// Returns:
+// - true if low breakout occurred; false otherwise.
+// ---------------------------------------------------------------------
 bool RangeCalculator::get_range_low_breakout(){
     return f_low_breakout;
 };    
