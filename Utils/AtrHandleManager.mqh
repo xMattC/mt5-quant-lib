@@ -12,7 +12,19 @@ private:
     AtrEntry cache[];  // internal cache of ATR handles
 
 public:
-    // Get or create an ATR handle for a specific symbol/timeframe/period
+
+    // ---------------------------------------------------------------------
+    // Returns a valid ATR handle for the given symbol, timeframe, and period.
+    // Creates and caches the handle if not already available.
+    //
+    // Parameters:
+    // - symbol : Trading symbol (e.g., "EURUSD").
+    // - tf     : Timeframe (e.g., PERIOD_H1).
+    // - period : ATR period (e.g., 14).
+    //
+    // Returns:
+    // - The ATR indicator handle, or INVALID_HANDLE if failed.
+    // ---------------------------------------------------------------------
     int get_atr_handle(string symbol, ENUM_TIMEFRAMES tf, int period) {
         for (int i = 0; i < ArraySize(cache); i++) {
             if (cache[i].symbol == symbol && cache[i].tf == tf && cache[i].period == period)
@@ -32,7 +44,18 @@ public:
         return handle;
     }
 
-    // Get ATR value from buffer (returns EMPTY_VALUE if failure)
+    // ---------------------------------------------------------------------
+    // Gets the ATR value for a given symbol, timeframe, and period.
+    //
+    // Parameters:
+    // - symbol : Trading symbol (e.g., "EURUSD").
+    // - tf     : Timeframe to use (e.g., PERIOD_H1).
+    // - period : ATR period to calculate.
+    // - shift  : Bar shift to read the value from (default is 1 for last closed bar. NEVER use 0!).
+    //
+    // Returns:
+    // - ATR value at the given shift, or EMPTY_VALUE on failure.
+    // ---------------------------------------------------------------------
     double get_atr_value(string symbol, ENUM_TIMEFRAMES tf, int period, int shift = 1) {
         int handle = get_atr_handle(symbol, tf, period);
         if (handle == INVALID_HANDLE) {
@@ -51,7 +74,13 @@ public:
         return buffer[0];
     }
 
-    // Release all handles in the cache
+    // ---------------------------------------------------------------------
+    // Releases all cached ATR handles and clears the internal cache.
+    //
+    // Logic:
+    // - Calls IndicatorRelease for each handle.
+    // - Clears the `cache` array.
+    // ---------------------------------------------------------------------
     void release_handles() {
         for (int i = 0; i < ArraySize(cache); i++) {
             if (cache[i].handle != INVALID_HANDLE)
@@ -60,4 +89,3 @@ public:
         ArrayResize(cache, 0);
     }
 };
-
