@@ -55,14 +55,14 @@ TrendlineAnalyser tl_tools;
 //| RISK AND POSITION SETTINGS                                       |
 //+------------------------------------------------------------------+
 input LOT_MODE inp_lot_mode = LOT_MODE_PCT_RISK;      // Method used for position sizing (e.g., fixed lot, or % risk)
-string lot_mode = EnumToString(inp_lot_mode);         // convert to string
 input double inp_lot_var = 2;                         // Lot value or risk percentage (depending on selected lot mode)
 input SL_MODE inp_sl_mode = SL_ATR_MULTIPLE;          // Stop Loss method (e.g., ATR-based, fixed value, etc.)
-string sl_mode = EnumToString(inp_sl_mode);           // convert to  string
 input double inp_sl_var = 1.5;                        // SL parameter (e.g., ATR multiplier or fixed points)
 input TP_MODE inp_tp_mode = TP_ATR_MULTIPLE;          // Take Profit method (e.g., ATR-based, fixed value, etc.)
-string tp_mode = EnumToString(inp_tp_mode);           // convert to  string
 input double inp_tp_var = 1;                          // TP parameter (e.g., ATR multiplier or fixed points)
+string lot_mode = EnumToString(inp_lot_mode);         // convert to string
+string sl_mode = EnumToString(inp_sl_mode);           // convert to  string
+string tp_mode = EnumToString(inp_tp_mode);           // convert to  string
 //+------------------------------------------------------------------+
 //| BACKTESTING & OPTIMIZATION SETTINGS                              |
 //+------------------------------------------------------------------+
