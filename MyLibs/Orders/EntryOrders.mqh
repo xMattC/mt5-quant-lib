@@ -1,13 +1,25 @@
+
+//+------------------------------------------------------------------+
+//|                                                EntryOrders.mqh   |
+//|                        Handles logic for opening buy/sell orders |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Orders/CalculatePositionData.mqh>
+#include <MyLibs/Orders/OrderTracker.mqh>
 #include <Trade/Trade.mqh>
 
 class EntryOrders {
 protected:
     CTrade trade;
     CalculatePositionData calc;
+    OrderTracker track;
 
 public:
-    int count_open_positions(string symbol, int order_side, long _magic_number);
 
     bool open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES atr_period, string _sl_mode, double sl_var, string _tp_mode,
                          double tp_var, string _lot_mode, double lot_var, long _magic_number);
@@ -30,30 +42,6 @@ public:
                                                 string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number);
 };
 
-// ---------------------------------------------------------------------
-// Counts open positions by symbol, side, and magic number.
-//
-// Parameters:
-// - symbol        : Symbol to check.
-// - order_side    : 1 = Buy, 2 = Sell, 0 = Any.
-// - _magic_number : Magic number to filter.
-//
-// Returns:
-// - Number of matching open positions.
-// ---------------------------------------------------------------------
-int EntryOrders::count_open_positions(string symbol, int order_side, long _magic_number) {
-    int count = 0;
-    for (int i = PositionsTotal() - 1; i >= 0; i--) {
-        ulong ticket = PositionGetTicket(i);
-        if (PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == _magic_number) {
-            int type = (int) PositionGetInteger(POSITION_TYPE);
-            if (order_side == 0 || (order_side == 1 && type == POSITION_TYPE_BUY) || (order_side == 2 && type == POSITION_TYPE_SELL)) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
 
 // ---------------------------------------------------------------------
 // Opens a market BUY position.
@@ -77,7 +65,7 @@ bool EntryOrders::open_buy_orders(string symbol, bool condition, ENUM_TIMEFRAMES
                                   string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
     double current_price = SymbolInfoDouble(symbol, SYMBOL_ASK);
-    if (count_open_positions(symbol, 1, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 1, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, current_price, 1, _sl_mode, sl_var, atr_period);
     double take_profit = calc.calculate_take_profit(symbol, current_price, stop_loss, 1, _tp_mode, tp_var, atr_period);
@@ -118,7 +106,7 @@ bool EntryOrders::open_sell_orders(string symbol, bool condition, ENUM_TIMEFRAME
                                    string _tp_mode, double tp_var, string _lot_mode, double lot_var, long _magic_number) {
     if (!condition) return false;
     double current_price = SymbolInfoDouble(symbol, SYMBOL_BID);
-    if (count_open_positions(symbol, 2, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 2, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, current_price, 2, _sl_mode, sl_var, atr_period);
     double take_profit = calc.calculate_take_profit(symbol, current_price, stop_loss, 2, _tp_mode, tp_var, atr_period);
@@ -161,7 +149,7 @@ bool EntryOrders::open_buy_stop_order(string symbol, bool condition, double entr
                                       string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                       long _magic_number) {
     if (!condition) return false;
-    if (count_open_positions(symbol, 1, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 1, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, entry_price, 1, _sl_mode, sl_var, atr_period);
     double take_profit = calc.calculate_take_profit(symbol, entry_price, stop_loss, 1, _tp_mode, tp_var, atr_period);
@@ -204,7 +192,7 @@ bool EntryOrders::open_sell_stop_order(string symbol, bool condition, double ent
                                        string _sl_mode, double sl_var, string _tp_mode, double tp_var, string _lot_mode, double lot_var,
                                        long _magic_number) {
     if (!condition) return false;
-    if (count_open_positions(symbol, 2, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 2, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, entry_price, 2, _sl_mode, sl_var, atr_period);
     double take_profit = calc.calculate_take_profit(symbol, entry_price, stop_loss, 2, _tp_mode, tp_var, atr_period);
@@ -246,7 +234,7 @@ bool EntryOrders::open_runner_buy_order_with_virtual_tp(string symbol, bool cond
                                                         long _magic_number) {
     if (!condition) return false;
     double current_price = SymbolInfoDouble(symbol, SYMBOL_ASK);
-    if (count_open_positions(symbol, 1, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 1, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, current_price, 1, _sl_mode, sl_var, atr_period);
     double virtual_tp = calc.calculate_take_profit(symbol, current_price, stop_loss, 1, _tp_mode, tp_var, atr_period);
@@ -288,7 +276,7 @@ bool EntryOrders::open_runner_sell_order_with_virtual_tp(string symbol, bool con
                                                          long _magic_number) {
     if (!condition) return false;
     double current_price = SymbolInfoDouble(symbol, SYMBOL_BID);
-    if (count_open_positions(symbol, 2, _magic_number) > 0) return false;
+    if (track.count_open_positions(symbol, 2, _magic_number) > 0) return false;
 
     double stop_loss = calc.calculate_stoploss(symbol, current_price, 2, _sl_mode, sl_var, atr_period);
     double virtual_tp = calc.calculate_take_profit(symbol, current_price, stop_loss, 2, _tp_mode, tp_var, atr_period);

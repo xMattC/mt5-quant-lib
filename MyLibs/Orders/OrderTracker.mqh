@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                                OrderTracker.mqh  |
+//|                          Tracks open orders or pending positions |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <Trade/OrderInfo.mqh>
 #include <Trade/PositionInfo.mqh>
 
@@ -8,63 +18,33 @@ class OrderTracker {
 
    public:
     int count_open_positions(string symbol, int order_side, long magic_number);
-    int count_all_positions(string symbol, long magic_number);
     int count_pending_orders(string symbol, ENUM_ORDER_TYPE order_type, long magic);
 };
 
 
 // ---------------------------------------------------------------------
-// Counts the number of open BUY or SELL positions for a given symbol.
+// Counts open positions by symbol, side, and magic number.
 //
 // Parameters:
-// - symbol       : Trading symbol (e.g., "EURUSD").
-// - order_side   : 1 = BUY, 2 = SELL.
-// - magic_number : Magic number identifying strategy group.
+// - symbol        : Symbol to check.
+// - order_side    : 1 = Buy, 2 = Sell, 0 = Any.
+// - _magic_number : Magic number to filter.
 //
 // Returns:
 // - Number of matching open positions.
 // ---------------------------------------------------------------------
-int OrderTracker::count_open_positions(string symbol, int order_side, long magic_number) {
+int OrderTracker::count_open_positions(string symbol, int order_side, long _magic_number) {
     int count = 0;
-
     for (int i = PositionsTotal() - 1; i >= 0; i--) {
         ulong ticket = PositionGetTicket(i);
-
-        if (PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == magic_number) {
-            if (order_side == 1 && PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY) {
-                count++;
-            }
-
-            if (order_side == 2 && PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_SELL) {
+        
+        if (PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == _magic_number) {
+            int type = (int) PositionGetInteger(POSITION_TYPE);
+            if (order_side == 0 || (order_side == 1 && type == POSITION_TYPE_BUY) || (order_side == 2 && type == POSITION_TYPE_SELL)) {
                 count++;
             }
         }
     }
-
-    return count;
-}
-
-// ---------------------------------------------------------------------
-// Counts all open positions for a symbol regardless of direction.
-//
-// Parameters:
-// - symbol       : Trading symbol.
-// - magic_number : Magic number identifying strategy group.
-//
-// Returns:
-// - Total number of matching positions.
-// ---------------------------------------------------------------------
-int OrderTracker::count_all_positions(string symbol, long magic_number) {
-    int count = 0;
-
-    for (int i = PositionsTotal() - 1; i >= 0; i--) {
-        ulong ticket = PositionGetTicket(i);
-
-        if (PositionGetString(POSITION_SYMBOL) == symbol && PositionGetInteger(POSITION_MAGIC) == magic_number) {
-            count++;
-        }
-    }
-
     return count;
 }
 

@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                             MarketDataUtils.mqh  |
+//|           Simplifies access to indicator buffers and price info  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 class MarketDataUtils {
     public:
         bool is_new_bar(string symbol, ENUM_TIMEFRAMES time_frame, string daily_start_time = "00:10");

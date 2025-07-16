@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                                 ExitOrders.mqh   |
+//|        Handles logic for closing trades under various conditions |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Orders/CalculatePositionData.mqh>
 #include <MyLibs/Utils/TimeZones.mqh>
 #include <Trade/Trade.mqh>

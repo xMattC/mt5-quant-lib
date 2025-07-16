@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                                 ChartUtils.mqh   |
+//|                    Utilities for drawing and annotating charts   |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <Object.mqh>
 
 class ChartUtils : public CObject {

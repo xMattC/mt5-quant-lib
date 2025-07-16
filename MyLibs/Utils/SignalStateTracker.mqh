@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                          SignalStateTracker.mqh  |
+//| Tracks signal timing (e.g. how many bars ago a trigger occurred) |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 class SignalStateTracker {
 private:
 

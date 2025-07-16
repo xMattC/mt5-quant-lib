@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                    MultiSymbolSignalTracker.mqh  |
+//|               Tracks per-symbol signal state in multi-asset EAs  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Utils/SignalStateTracker.mqh>
 
 // ---------------------------------------------------------------------

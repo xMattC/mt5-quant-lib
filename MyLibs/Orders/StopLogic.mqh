@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                                   StopLogic.mqh  |
+//|                      stoploss switch for in-code sl calculations |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 class StopLogic {
 public:
     double sl_specified_value_switch(string sl_mode, double inp_sl_var, double value);

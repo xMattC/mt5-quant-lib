@@ -1,14 +1,19 @@
+//+------------------------------------------------------------------+
+//|                                        CalculatePositionData.mqh |
+//|    Provides core logic for computing stop loss, take profit, lot |
+//|         size, and trading costs based on symbol, price, and risk |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Utils/MarketDataUtils.mqh>
 #include <MyLibs/Utils/TimeZones.mqh>
 #include <MyLibs/Utils/AtrHandleManager.mqh>
 #include <Trade/Trade.mqh>
 
-// ---------------------------------------------------------------------
-// CLASS: CalculatePositionData
-// ---------------------------------------------------------------------
-// Provides core logic for computing stop loss, take profit, lot size,
-// and trading costs based on symbol, price, and risk parameters.
-// ---------------------------------------------------------------------
 class CalculatePositionData : public CObject {
 protected:
     CTrade trade;

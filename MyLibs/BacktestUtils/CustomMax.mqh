@@ -1,25 +1,20 @@
+//+------------------------------------------------------------------+
+//|                                                  CustomeMax.mqh  |
+//|            Defines custom optimization criteria for backtesting  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <Trade/Trade.mqh>
 
-// ---------------------------------------------------------------------
-// ENUM: CUSTOM_MAX_TYPE
-// ---------------------------------------------------------------------
-// Defines the types of custom performance criteria that can be used
-// for calculating max optimization targets.
-//
-// Values:
-// - CM_WIN_LOSS_RATIO : Use win/loss ratio.
-// - CM_WIN_PERCENT    : Use win percentage.
-// ---------------------------------------------------------------------
 enum CUSTOM_MAX_TYPE {
     CM_WIN_LOSS_RATIO,
     CM_WIN_PERCENT
 };
 
-// ---------------------------------------------------------------------
-// CLASS: CustomMax
-// ---------------------------------------------------------------------
-// Calculates custom performance criteria for use in optimizations.
-// ---------------------------------------------------------------------
 class CustomMax : public CObject {
 protected:
     double custom_criteria;

@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                             ResourceManager.mqh  |
+//|                    Central manager for indicator handle cleanup  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Utils/AtrHandleManager.mqh>
 
 // ---------------------------------------------------------------------
