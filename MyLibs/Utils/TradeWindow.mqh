@@ -1,10 +1,21 @@
+//+------------------------------------------------------------------+
+//|                                                 TradeWindow.mqh  |
+//|                       Defines and manages tradable time sessions |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
+
 #include <MyLibs/Utils/TimeZones.mqh>
 
 class TradeSessionUtils {
 
 protected:
-   TimeZones tz;                   // For handling timezone conversion
-   bool in_window;                 // Whether the current time is in the allowed window
+   TimeZones tz;                  // For handling timezone conversion
+   bool in_window;                // Whether the current time is in the allowed window
    datetime start_time;           // Session start time (converted to Broker time)
    datetime end_time;             // Session end time (converted to Broker time)
 

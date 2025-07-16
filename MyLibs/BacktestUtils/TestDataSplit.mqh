@@ -1,33 +1,23 @@
-// ---------------------------------------------------------------------
-// ENUM: MODE_SPLIT_DATA
-// ---------------------------------------------------------------------
-// Defines how to split data during testing based on time attributes.
-//
-// Values:
-// - NO_SPLIT    : Do not split, always return true.
-// - ODD_YEARS   : Include only odd-numbered years.
-// - EVEN_YEARS  : Include only even-numbered years.
-// - ODD_MONTHS  : Include only odd-numbered months.
-// - EVEN_MONTHS : Include only even-numbered months.
-// - ODD_WEEKS   : Include only odd-numbered weeks.
-// - EVEN_WEEKS  : Include only even-numbered weeks.
-// ---------------------------------------------------------------------
+//+------------------------------------------------------------------+
+//|                                               TestDataSplit.mqh  |
+//|           Splits historical data into training/testing segments  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 enum MODE_SPLIT_DATA {
-    NO_SPLIT,   
-    ODD_YEARS,  
-    EVEN_YEARS,
-    ODD_MONTHS,
-    EVEN_MONTHS,
-    ODD_WEEKS,
-    EVEN_WEEKS     
+    NO_SPLIT,       // Do not split, always return true.
+    ODD_YEARS,      // Include only odd-numbered years.
+    EVEN_YEARS,     // Include only even-numbered years.
+    ODD_MONTHS,     // Include only odd-numbered months.
+    EVEN_MONTHS,    // Include only even-numbered months.
+    ODD_WEEKS,      // Include only odd-numbered weeks.
+    EVEN_WEEKS      // Include only even-numbered weeks.
 };
 
-// ---------------------------------------------------------------------
-// CLASS: TestDataSplit
-// ---------------------------------------------------------------------
-// Provides logic to determine whether the current date falls within
-// a selected split group for testing or optimization purposes.
-// ---------------------------------------------------------------------
 class TestDataSplit {
 public:
     bool in_test_period(MODE_SPLIT_DATA data_split_method);

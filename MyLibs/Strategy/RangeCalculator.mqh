@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                             RangeCalculator.mqh  |
+//|            Determines a high/low price point within a time range |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #property library
 #include <Trade/Trade.mqh>
 #include <MyLibs/Utils/TimeZones.mqh>

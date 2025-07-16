@@ -1,11 +1,15 @@
+//+------------------------------------------------------------------+
+//|                                           TrendlineAnalyser.mqh  |
+//|    Detects price crossovers and trend direction for a ma buffer  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <MyLibs/Utils/MarketDataUtils.mqh>
 
-// ---------------------------------------------------------------------
-// CLASS: TrendlineAnalyser
-// ---------------------------------------------------------------------
-// A utility class to detect price crossovers with a trendline buffer.
-// Supports both crossover detection and trend direction checks.
-// ---------------------------------------------------------------------
 class TrendlineAnalyser {
 private:
     MarketDataUtils market_data_utils;

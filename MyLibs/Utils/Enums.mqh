@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                                       Enums.mqh  |
+//|                      Enum declarations for inputs and logic flow |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 enum  LOT_MODE{
     LOT_MODE_FIXED,         // Fixed Lot Size
     LOT_MODE_PCT_ACCOUNT,   // Percent of Account (fixed)

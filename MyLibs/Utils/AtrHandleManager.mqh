@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                           AtrHandleManager.mqh   |
+//|                        ATR Handle Caching Utility for MQL5 EAs   |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <Trade/SymbolInfo.mqh>
 
 class AtrHandleManager {

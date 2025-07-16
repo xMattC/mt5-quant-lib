@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                             AdjustPosition.mqh   |
+//|   Manages stop loss adjustments, trailing stops, and breakevens  |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #include <Trade/Trade.mqh>
 #include <MyLibs/utils/AtrHandleManager.mqh>
 
@@ -7,12 +17,6 @@
 CTrade trade;
 AtrHandleManager atr_manager;
 
-// ---------------------------------------------------------------------
-// CLASS: AdjustPosition
-// ---------------------------------------------------------------------
-// Provides methods to manage stop-loss logic for runner trades.
-// Includes breakeven, trailing stop (fixed and ATR), and virtual TP SLs.
-// ---------------------------------------------------------------------
 class AdjustPosition {
 public:
     void set_breakeven_sl(string symbol, int runner_magic_no, double buffer_points = 5);

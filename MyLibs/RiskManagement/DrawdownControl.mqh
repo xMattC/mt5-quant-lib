@@ -1,3 +1,13 @@
+//+------------------------------------------------------------------+
+//|                                             DrawdownControl.mqh  |
+//| Implements account drawdown-based risk controls (for prop-firms) |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
 #property library
 #include <Trade/Trade.mqh>
 #include <MyLibs/Utils/MarketDataUtils.mqh>

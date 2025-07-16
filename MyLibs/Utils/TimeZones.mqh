@@ -1,3 +1,14 @@
+//+------------------------------------------------------------------+
+//|                                                   TimeZones.mqh  |
+//|                Handles timezone conversion and time window logic |
+//|                                                                  |
+//|                                  2025 xMattC (github.com/xMattC) |
+//+------------------------------------------------------------------+
+#property copyright "2025 xMattC (github.com/xMattC)"
+#property link      "https://github.com/xMattC"
+#property version   "1.00"
+
+
 #property library
 #include <MyLibs/Utils/DealingWithTime.mqh>
 #include <Trade/Trade.mqh>
