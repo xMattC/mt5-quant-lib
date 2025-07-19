@@ -1,5 +1,7 @@
 # MyLibs for MetaTrader 5
 
+**MetaTrader 5 (MT5)** is a multi-asset trading platform widely used for developing and executing automated trading strategies. [Learn more](https://www.metatrader5.com/en)
+
 This is a modular MQL5 codebase containing reusable classes and utilities designed to accelerate EA development, backtesting, and live deployment for MetaTrader 5. It includes complete solutions for trade management, risk control, signal generation, time-based utilities, and more.
 
 > **Note**: To use this framework, the `MyLibs` folder must be placed inside your MetaTrader 5 **`Include/`** directory:
