@@ -118,6 +118,5 @@ Use `OnTester()` to drive optimization scoring logic.
 - Each helper class is standalone and can be reused or extended.
 - Use `MultiSymbolSignalTracker` to handle per-symbol logic in multi-asset EAs.
 - Time-related functions are consolidated in `TimeZones.mqh` and `TradeWindow.mqh`.
-
 ---
-
+Note: This repository serves as a proof of concept. Active development is maintained in a private repository. If you're interested in collaborating more closely, please don’t hesitate to reach out.
