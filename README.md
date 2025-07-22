@@ -96,25 +96,4 @@ All indicator handles are dynamically created and released via the `ResourceMana
 2. Copy the `MyLibs/` directory into your MT5 `Include/` folder:
 3. Place the example EA file into the `MQL5/Experts/` directory.
 4. Open **MetaEditor** and compile the EA.
-5. Attach it to a chart or run backtests.
 
----
-
-## Backtesting & Optimization
-
-The EA supports advanced backtesting scenarios via:
-
-- **CustomMax.mqh** — Optimizable custom fitness criteria (e.g., win rate, net profit)
-- **TestDataSplit.mqh** — Supports train/test splits for more robust model evaluation
-
-Use `OnTester()` to drive optimization scoring logic.
-
----
-
-
-
-## Maintenance Notes
-
-- Each helper class is standalone and can be reused or extended.
-- Use `MultiSymbolSignalTracker` to handle per-symbol logic in multi-asset EAs.
-- Time-related functions are consolidated in `TimeZones.mqh` and `TradeWindow.mqh`.
