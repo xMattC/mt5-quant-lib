@@ -7,7 +7,7 @@ This is a modular MQL5 codebase containing reusable classes and utilities design
 > **Note**: To use this framework, the `MyLibs` folder must be placed inside your MetaTrader 5 **`Include/`** directory:
 >
 > ```
-> MQL5/Include/MyLibs/
+> "C:/Users/YourUser/AppData/Roaming/MetaQuotes/Terminal/YOUR_TERMINAL_ID/MQL5/Include/MyLibs/
 > ```
 
 ## Folder Structure
