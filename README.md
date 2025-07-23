@@ -50,7 +50,7 @@ MyLibs/
 
 ## Included EA Example
 
-This repository also includes a full EA (`trend_following_ea.mq5`) that demonstrates how to use the MyLibs framework.
+This repository also includes a full Expert Advisor (EA) (`trend_following_ea.mq5`) that demonstrates how to use the MyLibs framework.
 
 ### Features of the EA
 
