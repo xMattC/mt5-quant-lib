@@ -1,9 +1,8 @@
-// ---------------------------------------------------------------------
+// ------------------------------------------------------------------
 // This code was written by another developer (Calli).
-// Basic testing confirms functionality, but I (xMattC) have not
-// fully reviewed or verified its correctness or quality.
-// Use at your own risk.
-// ---------------------------------------------------------------------
+// Basic testing confirms functionality, but I (xMattC) have not fully 
+// reviewed or verified its correctness or quality.
+// ------------------------------------------------------------------
 
 //+------------------------------------------------------------------+
 //|                                              DealingWithTime.mqh |
