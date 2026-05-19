@@ -186,3 +186,9 @@ EntryOrders entry_orders;
 AdjustPosition adjust_pos;
 ```
 
+## ⚠ Disclaimer
+
+This project was developed for research and software engineering purposes.
+
+The library provides reusable infrastructure components and does not constitute investment advice or a complete trading system.
+
