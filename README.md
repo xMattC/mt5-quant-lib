@@ -1,121 +1,135 @@
-# MyLibs for MetaTrader 5
+![MQL5](https://img.shields.io/badge/MQL5-MetaTrader_5-blue)
+![Library](https://img.shields.io/badge/Type-Custom_Library-success)
+![Architecture](https://img.shields.io/badge/Architecture-Modular-success)
+![Risk](https://img.shields.io/badge/Risk-Management-orange)
+![Trading](https://img.shields.io/badge/Domain-Algorithmic_Trading-green)
+![Backtesting](https://img.shields.io/badge/Backtesting-MT5_Strategy_Tester-blueviolet)
 
-This is a modular MQL5 codebase containing reusable classes and utilities designed to accelerate EA development, backtesting, and live deployment for MetaTrader 5. It includes complete solutions for trade management, risk control, signal generation, time-based utilities, and more.
+# MT5 Quant Lib
 
-> **Note**: To use this framework, the `MyLibs` folder must be placed inside your MetaTrader 5 **`Include/`** directory:
->
-> ```
-> MQL5/Include/MyLibs/
-> ```
+A reusable MQL5 library providing infrastructure components and utility classes for MetaTrader 5 development.
 
-## Folder Structure
+The library abstracts common functionality such as trade execution, risk management, indicator handling, signal tracking, and supporting utilities into reusable components.
+
+The primary goal is to reduce duplicated implementation, improve maintainability, and provide a modular foundation for building Expert Advisors and trading systems.
+
+---
+
+## 🎯 Engineering Focus
+
+This project was built to demonstrate:
+
+- Reusable library design
+- Object-oriented development
+- Modular architecture
+- Infrastructure abstraction
+- Trade management utilities
+- Risk-management systems
+- Indicator abstraction layers
+- Multi-symbol support
+- Shared runtime components
+- Separation of concerns
+
+---
+
+## 🛠️ Tech Stack
+
+- **Language:** MQL5
+- **Platform:** MetaTrader 5
+- **Architecture:** Modular utility library
+- **Testing:** MT5 Strategy Tester
+- **Domain:** Trading infrastructure and system development
+
+---
+
+## 🔑 Core Library Components
+
+The library provides reusable modules including:
+
+- Trade execution utilities
+- Position sizing components
+- Risk management systems
+- Stop-loss and take-profit management
+- Indicator handle management
+- Signal state tracking
+- Time and session filters
+- Multi-symbol support
+- Backtesting utilities
+- Shared helper functions
+
+---
+
+## 📈 Library Architecture
+
+```mermaid
+flowchart TD
+
+A["Trade Execution"]
+
+B["Risk Management"]
+
+C["Indicator Management"]
+
+D["Signal Tracking"]
+
+E["Time Filters"]
+
+F["Backtesting Utilities"]
+
+G["Shared Helpers"]
+
+H["MT5 Quant Lib"]
+
+H --> A
+H --> B
+H --> C
+H --> D
+H --> E
+H --> F
+H --> G
 ```
-MyLibs/
-├── BacktestUtils/
-│   ├── CustomMax.mqh              # Defines custom optimization criteria for backtesting
-│   └── TestDataSplit.mqh          # Supports splitting historical data into training/testing segments
-│
-├── Indicators/
-│   ├── AtrBands.mqh               # Calculates and visualizes ATR-based dynamic bands
-│   └── TrendlineAnalyser.mqh      # Detects trendline breaks and trend direction changes
-│
-├── Orders/
-│   ├── AdjustPosition.mqh         # Manages stop loss adjustments, trailing stops, and breakevens
-│   ├── CalculatePositionData.mqh  # Computes lot sizing and position metrics
-│   ├── EntryOrders.mqh            # Handles logic for opening buy/sell orders
-│   ├── ExitOrders.mqh             # Handles logic for closing trades under various conditions
-│   ├── OrderTracker.mqh           # Tracks open orders and their metadata
-│   └── StopLogic.mqh              # Provides rule-based SL/TP value resolution
-│
-├── RiskManagement/
-│   └── DrawdownControl.mqh        # Implements drawdown-based risk controls
-│
-├── Strategy/
-│   └── RangeCalculator.mqh        # Measures recent market range to inform signal logic
-│
-├── Utils/
-│   ├── AtrHandleManager.mqh            # Efficiently manages and caches ATR indicator handles
-│   ├── ChartUtils.mqh                  # Utilities for drawing and annotating charts
-│   ├── DealingWithTime.mqh             # Time conversion and formatting helpers
-│   ├── Enums.mqh                       # Enum declarations for inputs and logic flow
-│   ├── MarketDataUtils.mqh             # Simplifies access to indicator buffers and price info
-│   ├── MultiSymbolSignalTracker.mqh    # Tracks per-symbol signal state in multi-asset EAs
-│   ├── ResourceManager.mqh             # Central manager for indicator handle cleanup
-│   ├── SignalStateTracker.mqh          # Tracks signal timing (e.g., how many bars ago a trigger occurred)
-│   ├── TimeZones.mqh                   # Handles timezone conversion and time window logic
-│   └── TradeWindow.mqh                 # Defines and manages tradable time sessions
-```
 
-## Included EA Example
+The library separates reusable infrastructure functionality into independent modules that can be combined as needed.
 
-This repository also includes a full EA (`trend_following_ea.mq5`) that demonstrates how to use the MyLibs framework.
+This approach improves:
 
-### Features of the EA
+- maintainability
+- reusability
+- modularity
+- separation of concerns
+- reduction of duplicated logic
 
-- Multi-symbol trading (`AUDNZD`, `EURGBP`, etc.)
-- Custom indicators and buffer signal handling
-- Virtual TP runner trades
-- ATR trailing stops and breakeven logic
-- Risk split between take-profit and runner entries
-- Support for data splitting during backtesting
-- Modular entry and exit strategies
-- Time-based filtering and session control
-
-### EA Strategy Logic Overview
-
-Signal generation is broken into modular components:
-
-- **Trigger** (e.g., RSI cross)
-- **Trendline** (direction, breakout, pullback)
-- **Confirmation** (e.g., CCI alignment)
-- **Volume** (OBV trend confirmation)
-- **ATR Band Positioning** (via `AtrBands`)
-- **Exit Logic** (Stochastic crossover, trendline break)
-
-### EA Dependencies
-
-The EA uses standard MQL5 built-in indicators, but can be easily modified to use custom indicators if desired:
-
-- `iMA` – Moving Average (used for trendline estimation)
-- `iRSI` – Relative Strength Index (used as a trigger)
-- `iCCI` – Commodity Channel Index (used for confirmation)
-- `iOBV` – On-Balance Volume (used for volume filtering)
-- `iStochastic` – Stochastic Oscillator (used for exit signals)
-
-**Note:** These indicators were selected for simplicity and demonstration purposes only. They are **not optimized** for trading performance and should be replaced or tuned during real development and testing. The architecture is fully modular and allows for plugging in better-suited or proprietary indicators.
-
-All indicator handles are dynamically created and released via the `ResourceManager` class, ensuring clean memory handling during runtime and backtests.
 
 ---
 
-## Installation & Usage
+## 🧩 Example Application
 
-1. Clone or download this repository.
-2. Copy the `MyLibs/` directory into your MT5 `Include/` folder:
-3. Place the example EA file into the `MQL5/Experts/` directory.
-4. Open **MetaEditor** and compile the EA.
-5. Attach it to a chart or run backtests.
+The repository also contains a small example Expert Advisor demonstrating how library components can be integrated and used in a practical application.
+
+The example exists purely as a usage demonstration and is not the primary purpose of the repository.
 
 ---
 
-## Backtesting & Optimization
+## ⚠️ Current Limitations
 
-The EA supports advanced backtesting scenarios via:
-
-- **CustomMax.mqh** — Optimizable custom fitness criteria (e.g., win rate, net profit)
-- **TestDataSplit.mqh** — Supports train/test splits for more robust model evaluation
-
-Use `OnTester()` to drive optimization scoring logic.
-
----
-
-
-
-## Maintenance Notes
-
-- Each helper class is standalone and can be reused or extended.
-- Use `MultiSymbolSignalTracker` to handle per-symbol logic in multi-asset EAs.
-- Time-related functions are consolidated in `TimeZones.mqh` and `TradeWindow.mqh`.
+- Designed specifically for MetaTrader 5
+- Requires an MT5 environment
+- Not intended as a standalone trading system
+- Platform-specific dependencies may limit portability
+- Automated testing is limited due to MT5 platform constraints
 
 ---
 
+## 🧠 Software Engineering Skills Demonstrated
+
+This project demonstrates:
+
+- Reusable library design
+- Object-oriented programming
+- Modular architecture
+- Infrastructure abstraction
+- Risk-management implementation
+- Multi-symbol systems
+- Shared runtime development
+- Separation of concerns
+- Platform-specific software engineering
