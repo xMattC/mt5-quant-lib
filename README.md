@@ -14,6 +14,13 @@ The library abstracts common functionality such as trade execution, risk managem
 The primary goal is to reduce duplicated implementation, improve maintainability, and provide a modular foundation for building Expert Advisors and trading systems.
 
 ---
+
+## 🔍 Domain Context
+
+MetaTrader 5 (MT5) is a multi-asset trading platform widely used for developing and executing automated trading strategies. [Learn more](https://www.metatrader5.com/en)
+
+---
+
 ## 🧰 What the Library Provides
 
 MT5 Quant Lib provides reusable infrastructure for common Expert Advisor development tasks.
